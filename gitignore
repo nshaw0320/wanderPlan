@@ -1,0 +1,37 @@
+# WanderPlan .gitignore
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Editor temp files
+*.swp
+*.swo
+*~
+
+# Node (if you ever add a build step)
+node_modules/
+npm-debug.log*
+
+# Environment files — DO NOT commit API keys
+.env
+.env.local
+.env.*.local
+
+# Local firebase overrides
+.firebase/
+firebase-debug.log
+firestore-debug.log
