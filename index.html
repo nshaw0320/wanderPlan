@@ -1,320 +1,2030 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WanderPlan — Trip Planner</title>
-  <meta name="description" content="Plan every trip, from a day out to an epic adventure." />
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#1a1f2e" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>WanderPlan — Trip Planner</title>
+<meta name="description" content="Plan every trip, from a quick day out to an epic adventure."/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#006493"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ================================================================
+   MATERIAL DESIGN 3 — WanderPlan
+   Palette: Teal/Cyan primary · Light surface · Clean MD3 tokens
+   ================================================================ */
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+/* MD3 Color Tokens */
+:root {
+  --md-primary:            #006493;
+  --md-on-primary:         #ffffff;
+  --md-primary-container:  #c8e6ff;
+  --md-on-primary-container: #001e30;
 
-  <!-- Firebase -->
-  <script type="module" src="js/app.js"></script>
+  --md-secondary:          #4e6577;
+  --md-on-secondary:       #ffffff;
+  --md-secondary-container:#d1e5f5;
+  --md-on-secondary-container:#0a1e2b;
 
-  <link rel="stylesheet" href="css/styles.css" />
+  --md-tertiary:           #5b5b7e;
+  --md-on-tertiary:        #ffffff;
+  --md-tertiary-container: #e2dfff;
+  --md-on-tertiary-container:#171537;
+
+  --md-error:              #ba1a1a;
+  --md-on-error:           #ffffff;
+  --md-error-container:    #ffdad6;
+
+  --md-surface:            #f7fafc;
+  --md-surface-dim:        #d7dbdf;
+  --md-surface-bright:     #f7fafc;
+  --md-surface-container-lowest: #ffffff;
+  --md-surface-container-low:    #f1f4f8;
+  --md-surface-container:        #ebeef2;
+  --md-surface-container-high:   #e5e8ed;
+  --md-surface-container-highest:#dfe3e7;
+
+  --md-on-surface:         #191c1e;
+  --md-on-surface-variant: #41484d;
+  --md-outline:            #71787e;
+  --md-outline-variant:    #c1c7ce;
+
+  --md-inverse-surface:    #2e3133;
+  --md-inverse-on-surface: #eff1f3;
+  --md-inverse-primary:    #8dcdff;
+
+  --md-scrim:              rgba(0,0,0,0.32);
+
+  /* Elevation overlays (MD3 tonal) */
+  --md-elev-1: color-mix(in srgb, var(--md-primary) 5%,  var(--md-surface));
+  --md-elev-2: color-mix(in srgb, var(--md-primary) 8%,  var(--md-surface));
+  --md-elev-3: color-mix(in srgb, var(--md-primary) 11%, var(--md-surface));
+  --md-elev-4: color-mix(in srgb, var(--md-primary) 12%, var(--md-surface));
+
+  /* Shape */
+  --md-shape-xs:  4px;
+  --md-shape-sm:  8px;
+  --md-shape-md:  12px;
+  --md-shape-lg:  16px;
+  --md-shape-xl:  28px;
+  --md-shape-full: 50px;
+
+  /* Typography scale */
+  --md-display-lg:   57px/1.12;
+  --md-display-md:   45px/1.16;
+  --md-display-sm:   36px/1.22;
+  --md-headline-lg:  32px/1.25;
+  --md-headline-md:  28px/1.29;
+  --md-headline-sm:  24px/1.33;
+  --md-title-lg:     22px/1.27;
+  --md-title-md:     16px/1.5;
+  --md-title-sm:     14px/1.43;
+  --md-body-lg:      16px/1.5;
+  --md-body-md:      14px/1.43;
+  --md-body-sm:      12px/1.33;
+  --md-label-lg:     14px/1.43;
+  --md-label-md:     12px/1.33;
+  --md-label-sm:     11px/1.45;
+
+  --font-body:    'Google Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Google Sans Display', 'Google Sans', system-ui, sans-serif;
+  --font-mono:    'Roboto Mono', monospace;
+
+  --sidebar-w: 280px;
+  --topbar-h:  64px;
+  --transition: 0.2s cubic-bezier(0.2,0,0,1);
+  --transition-md: 0.3s cubic-bezier(0.2,0,0,1);
+}
+
+/* === Reset === */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{height:100%;-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--font-body);
+  background:var(--md-surface);
+  color:var(--md-on-surface);
+  height:100%;overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* === Screens === */
+.screen{position:fixed;inset:0;display:none}
+.screen.active{display:flex}
+
+/* ================================================================
+   AUTH SCREEN
+   ================================================================ */
+#auth-screen{
+  align-items:center;justify-content:center;
+  background:var(--md-surface);
+  flex-direction:column;
+}
+
+.auth-card{
+  background:var(--md-surface-container-lowest);
+  border-radius:var(--md-shape-xl);
+  padding:2.5rem 2rem;
+  width:100%;max-width:380px;
+  text-align:center;
+  box-shadow:0 1px 2px rgba(0,0,0,.1),0 4px 16px rgba(0,100,147,.08);
+  animation:cardIn .35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes cardIn{
+  from{opacity:0;transform:scale(.94) translateY(16px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+
+.auth-logo{
+  display:flex;align-items:center;justify-content:center;gap:.75rem;
+  margin-bottom:2rem;
+}
+.auth-logo-icon{
+  width:48px;height:48px;border-radius:var(--md-shape-md);
+  background:var(--md-primary);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;
+  box-shadow:0 2px 8px rgba(0,100,147,.3);
+}
+.auth-logo-text{
+  font-family:var(--font-display);
+  font-size:1.5rem;font-weight:700;
+  color:var(--md-on-surface);
+  letter-spacing:-.5px;
+}
+
+.auth-card h2{
+  font-family:var(--font-display);
+  font:500 var(--md-headline-sm);
+  color:var(--md-on-surface);
+  margin-bottom:.5rem;
+}
+.auth-sub{
+  font:var(--md-body-md);
+  color:var(--md-on-surface-variant);
+  margin-bottom:1.75rem;
+}
+
+.pin-display{
+  display:flex;gap:.875rem;justify-content:center;
+  margin-bottom:1.75rem;
+}
+.pin-dot{
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid var(--md-outline);
+  transition:var(--transition);
+}
+.pin-dot.filled{
+  background:var(--md-primary);
+  border-color:var(--md-primary);
+  transform:scale(1.1);
+}
+
+.pin-pad{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:.5rem;max-width:264px;margin:0 auto;
+}
+.pin-btn{
+  background:var(--md-surface-container-low);
+  border:none;border-radius:var(--md-shape-full);
+  color:var(--md-on-surface);
+  font-family:var(--font-display);
+  font-size:1.4rem;font-weight:500;
+  padding:1rem;cursor:pointer;
+  transition:var(--transition);
+  user-select:none;
+  position:relative;overflow:hidden;
+}
+.pin-btn::after{
+  content:'';position:absolute;inset:0;
+  background:var(--md-primary);opacity:0;
+  border-radius:inherit;transition:opacity .15s;
+}
+.pin-btn:hover::after{opacity:.08}
+.pin-btn:active{transform:scale(.94)}
+.pin-btn:active::after{opacity:.12}
+.pin-btn.del{font-size:1rem;color:var(--md-on-surface-variant)}
+
+.auth-error{
+  min-height:1.2rem;color:var(--md-error);
+  font:var(--md-body-sm);margin-top:.75rem;
+}
+.auth-link{
+  background:none;border:none;
+  color:var(--md-primary);
+  font:var(--md-label-lg);
+  cursor:pointer;margin-top:1.25rem;
+  padding:.5rem;border-radius:var(--md-shape-sm);
+  transition:var(--transition);
+}
+.auth-link:hover{background:color-mix(in srgb,var(--md-primary) 8%,transparent)}
+
+/* ================================================================
+   APP LAYOUT
+   ================================================================ */
+#app-screen{overflow:hidden}
+
+/* === Navigation Rail / Drawer === */
+.sidebar{
+  width:var(--sidebar-w);
+  background:var(--md-surface-container-low);
+  display:flex;flex-direction:column;
+  height:100vh;flex-shrink:0;
+  transition:transform var(--transition-md);
+  z-index:100;overflow:hidden;
+  border-right:1px solid var(--md-outline-variant);
+}
+
+.sidebar-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.25rem 1rem 1rem;
+}
+.sidebar-logo{
+  display:flex;align-items:center;gap:.625rem;
+  font-family:var(--font-display);
+  font-size:1.1rem;font-weight:700;
+  color:var(--md-on-surface);
+  letter-spacing:-.3px;
+}
+.sidebar-logo-icon{
+  width:36px;height:36px;border-radius:var(--md-shape-sm);
+  background:var(--md-primary);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;
+}
+.sidebar-close-btn{display:none}
+
+/* FAB-style new trip button */
+.btn-new-trip{
+  margin:.75rem 1rem;padding:.875rem 1.25rem;
+  background:var(--md-primary-container);
+  border:none;border-radius:var(--md-shape-lg);
+  color:var(--md-on-primary-container);
+  font-family:var(--font-body);font-weight:600;
+  font-size:.9rem;cursor:pointer;
+  transition:var(--transition);
+  display:flex;align-items:center;gap:.5rem;
+  box-shadow:0 1px 3px rgba(0,0,0,.12);
+}
+.btn-new-trip:hover{box-shadow:0 2px 6px rgba(0,0,0,.15);filter:brightness(.97)}
+.btn-new-trip:active{transform:scale(.98)}
+.btn-new-trip .plus-icon{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--md-primary);color:var(--md-on-primary);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;line-height:1;flex-shrink:0;
+}
+
+.sidebar-section-label{
+  padding:.5rem 1.25rem .4rem;
+  font:600 var(--md-label-sm);
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--md-on-surface-variant);
+}
+
+.trips-list{
+  flex:1;overflow-y:auto;padding:0 .5rem;
+  scrollbar-width:thin;scrollbar-color:var(--md-outline-variant) transparent;
+}
+.trips-empty{
+  color:var(--md-on-surface-variant);
+  font:var(--md-body-sm);
+  text-align:center;padding:2rem 1rem;line-height:1.6;
+}
+
+/* MD3 Navigation Drawer Item */
+.trip-item{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.75rem .875rem;
+  border-radius:var(--md-shape-full);
+  cursor:pointer;transition:var(--transition);
+  margin-bottom:2px;position:relative;
+}
+.trip-item:hover{background:color-mix(in srgb,var(--md-on-surface) 8%,transparent)}
+.trip-item.active{
+  background:var(--md-secondary-container);
+  color:var(--md-on-secondary-container);
+}
+.trip-item-icon{
+  font-size:1.25rem;flex-shrink:0;width:28px;text-align:center;
+}
+.trip-item-info{flex:1;min-width:0}
+.trip-item-name{
+  font:500 var(--md-label-lg);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:inherit;
+}
+.trip-item-meta{font:var(--md-label-sm);color:var(--md-on-surface-variant);margin-top:1px}
+.trip-item.active .trip-item-meta{color:var(--md-on-secondary-container);opacity:.7}
+
+.sidebar-footer{
+  padding:.75rem;border-top:1px solid var(--md-outline-variant);
+  display:flex;gap:.5rem;
+}
+.sidebar-footer-btn{
+  flex:1;background:none;
+  border:none;border-radius:var(--md-shape-full);
+  color:var(--md-on-surface-variant);
+  font:var(--md-label-md);padding:.625rem .5rem;
+  cursor:pointer;transition:var(--transition);
+  display:flex;align-items:center;justify-content:center;gap:.4rem;
+}
+.sidebar-footer-btn:hover{background:color-mix(in srgb,var(--md-on-surface) 8%,transparent);color:var(--md-on-surface)}
+
+/* === Top App Bar === */
+.main-content{
+  flex:1;display:flex;flex-direction:column;
+  overflow:hidden;min-width:0;
+}
+.topbar{
+  height:var(--topbar-h);
+  display:flex;align-items:center;
+  padding:0 1rem;gap:.5rem;
+  background:var(--md-surface-container-low);
+  border-bottom:1px solid var(--md-outline-variant);
+  flex-shrink:0;
+}
+.topbar-title{
+  font-family:var(--font-display);
+  font:500 var(--md-title-lg);
+  color:var(--md-on-surface);
+  flex:1;
+}
+.topbar-actions{display:flex;gap:.25rem}
+.menu-btn{display:none}
+
+/* === MD3 Buttons === */
+.icon-btn{
+  width:40px;height:40px;
+  background:none;border:none;
+  color:var(--md-on-surface-variant);
+  font-size:1rem;
+  cursor:pointer;border-radius:var(--md-shape-full);
+  transition:var(--transition);
+  display:inline-flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;flex-shrink:0;
+}
+.icon-btn::after{content:'';position:absolute;inset:0;background:var(--md-on-surface);opacity:0;transition:opacity .15s;border-radius:inherit}
+.icon-btn:hover::after{opacity:.08}
+.icon-btn:active{transform:scale(.94)}
+
+/* Filled button */
+.btn-primary{
+  background:var(--md-primary);
+  border:none;border-radius:var(--md-shape-full);
+  color:var(--md-on-primary);
+  font-family:var(--font-body);font-weight:600;
+  font-size:.875rem;padding:.625rem 1.25rem;
+  cursor:pointer;transition:var(--transition);
+  letter-spacing:.01em;
+  box-shadow:0 1px 2px rgba(0,0,0,.15);
+}
+.btn-primary:hover{box-shadow:0 2px 6px rgba(0,0,0,.2);filter:brightness(.97)}
+.btn-primary:active{transform:scale(.98);box-shadow:none}
+
+/* Outlined button */
+.btn-ghost{
+  background:none;
+  border:1px solid var(--md-outline);
+  border-radius:var(--md-shape-full);
+  color:var(--md-primary);
+  font-family:var(--font-body);font-size:.875rem;font-weight:500;
+  padding:.625rem 1.25rem;cursor:pointer;
+  transition:var(--transition);
+}
+.btn-ghost:hover{background:color-mix(in srgb,var(--md-primary) 8%,transparent);border-color:var(--md-primary)}
+
+/* Text button */
+.btn-text{
+  background:none;border:none;
+  color:var(--md-primary);
+  font-family:var(--font-body);font-size:.875rem;font-weight:500;
+  padding:.5rem .75rem;cursor:pointer;
+  border-radius:var(--md-shape-full);
+  transition:var(--transition);
+}
+.btn-text:hover{background:color-mix(in srgb,var(--md-primary) 8%,transparent)}
+
+.btn-ghost.btn-danger{color:var(--md-error);border-color:var(--md-error)}
+.btn-ghost.btn-danger:hover{background:color-mix(in srgb,var(--md-error) 8%,transparent)}
+
+.btn-primary-lg{
+  background:var(--md-primary);border:none;
+  border-radius:var(--md-shape-full);
+  color:var(--md-on-primary);
+  font-family:var(--font-body);font-weight:600;
+  font-size:1rem;padding:.875rem 2rem;
+  cursor:pointer;transition:var(--transition);
+  box-shadow:0 2px 8px rgba(0,100,147,.3);
+}
+.btn-primary-lg:hover{box-shadow:0 4px 14px rgba(0,100,147,.35);filter:brightness(.97)}
+
+/* Tonal button */
+.btn-tonal{
+  background:var(--md-secondary-container);
+  border:none;border-radius:var(--md-shape-full);
+  color:var(--md-on-secondary-container);
+  font-family:var(--font-body);font-weight:600;
+  font-size:.8rem;padding:.5rem 1rem;
+  cursor:pointer;transition:var(--transition);
+}
+.btn-tonal:hover{filter:brightness(.96)}
+
+.btn-sm{
+  padding:.375rem .875rem;font-size:.78rem;
+  border-radius:var(--md-shape-full);cursor:pointer;
+  border:1px solid var(--md-outline-variant);
+  background:none;color:var(--md-on-surface-variant);
+  font-family:var(--font-body);font-weight:500;
+  transition:var(--transition);
+}
+.btn-sm:hover{background:color-mix(in srgb,var(--md-on-surface) 8%,transparent)}
+
+/* === Views === */
+.view{
+  display:none;flex:1;overflow-y:auto;
+  padding:1.5rem;
+  scrollbar-width:thin;scrollbar-color:var(--md-outline-variant) transparent;
+}
+.view.active{display:block}
+
+/* ================================================================
+   DASHBOARD
+   ================================================================ */
+.dashboard-hero{
+  background:var(--md-primary-container);
+  border-radius:var(--md-shape-xl);
+  padding:2rem 2.5rem;
+  margin-bottom:1.5rem;
+  display:flex;align-items:center;
+  justify-content:space-between;gap:1.5rem;
+  overflow:hidden;position:relative;
+}
+.dashboard-hero::before{
+  content:'';position:absolute;
+  right:-40px;top:-40px;
+  width:200px;height:200px;
+  border-radius:50%;
+  background:color-mix(in srgb,var(--md-primary) 15%,transparent);
+}
+.dashboard-hero-text h1{
+  font-family:var(--font-display);
+  font:700 var(--md-headline-lg);
+  color:var(--md-on-primary-container);
+  margin-bottom:.5rem;line-height:1.2;
+}
+.dashboard-hero-text p{
+  font:var(--md-body-lg);
+  color:color-mix(in srgb,var(--md-on-primary-container) 80%,transparent);
+  margin-bottom:1.5rem;max-width:300px;
+}
+.hero-icon{
+  font-size:4rem;flex-shrink:0;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.15));
+  animation:float 3s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* MD3 Cards */
+.dashboard-stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:1rem;margin-bottom:1.5rem;
+}
+.stat-card{
+  background:var(--md-surface-container-lowest);
+  border-radius:var(--md-shape-lg);
+  padding:1.25rem;
+  border:1px solid var(--md-outline-variant);
+  transition:var(--transition);
+}
+.stat-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.stat-card-value{
+  font-family:var(--font-display);
+  font-size:2rem;font-weight:700;
+  color:var(--md-primary);margin-bottom:.25rem;
+}
+.stat-card-label{font:var(--md-label-md);color:var(--md-on-surface-variant)}
+
+.dashboard-recent h3{
+  font-family:var(--font-display);
+  font:500 var(--md-title-lg);
+  color:var(--md-on-surface);
+  margin-bottom:1rem;
+}
+
+.trips-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:1rem;
+}
+.trips-grid-empty{
+  grid-column:1/-1;text-align:center;
+  color:var(--md-on-surface-variant);
+  padding:3rem 1rem;font:var(--md-body-lg);
+}
+
+/* MD3 Filled Card */
+.trip-card{
+  background:var(--md-surface-container-lowest);
+  border:1px solid var(--md-outline-variant);
+  border-radius:var(--md-shape-lg);
+  padding:1.25rem;cursor:pointer;
+  transition:var(--transition-md);
+  position:relative;overflow:hidden;
+}
+.trip-card::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:4px;
+  background:var(--md-primary);opacity:0;
+  transition:opacity var(--transition);
+}
+.trip-card:hover{
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+  border-color:var(--md-primary);
+  transform:translateY(-2px);
+}
+.trip-card:hover::before{opacity:1}
+.trip-card-type{
+  display:inline-flex;align-items:center;
+  background:var(--md-secondary-container);
+  color:var(--md-on-secondary-container);
+  border-radius:var(--md-shape-full);
+  font:600 var(--md-label-sm);
+  letter-spacing:.04em;padding:.25rem .75rem;
+  margin-bottom:.875rem;
+}
+.trip-card-icon{font-size:2rem;margin-bottom:.625rem}
+.trip-card-name{
+  font-family:var(--font-display);
+  font:500 var(--md-title-md);
+  color:var(--md-on-surface);
+  margin-bottom:.25rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.trip-card-meta{font:var(--md-body-sm);color:var(--md-on-surface-variant)}
+
+/* ================================================================
+   TRIP VIEW
+   ================================================================ */
+.trip-header{
+  display:flex;align-items:flex-start;
+  justify-content:space-between;
+  margin-bottom:1.25rem;gap:1rem;
+}
+.trip-type-badge{
+  display:inline-flex;align-items:center;
+  background:var(--md-tertiary-container);
+  color:var(--md-on-tertiary-container);
+  border-radius:var(--md-shape-full);
+  font:600 var(--md-label-sm);
+  letter-spacing:.06em;text-transform:uppercase;
+  padding:.2rem .75rem;margin-bottom:.5rem;
+}
+.trip-header-info h2{
+  font-family:var(--font-display);
+  font:700 var(--md-headline-md);
+  color:var(--md-on-surface);
+  line-height:1.2;
+}
+.trip-meta{font:var(--md-body-md);color:var(--md-on-surface-variant);margin-top:.375rem}
+.trip-header-actions{display:flex;gap:.5rem;flex-shrink:0;align-items:flex-start}
+
+/* MD3 Tab Bar */
+.trip-tabs{
+  display:flex;gap:0;
+  border-bottom:1px solid var(--md-outline-variant);
+  margin-bottom:1.5rem;
+  overflow-x:auto;scrollbar-width:none;
+}
+.trip-tabs::-webkit-scrollbar{display:none}
+
+.trip-tab{
+  background:none;border:none;
+  color:var(--md-on-surface-variant);
+  font-family:var(--font-body);font-size:.875rem;font-weight:500;
+  padding:.875rem 1.125rem;cursor:pointer;
+  border-bottom:3px solid transparent;
+  transition:var(--transition);white-space:nowrap;
+  letter-spacing:.01em;
+}
+.trip-tab:hover{color:var(--md-on-surface);background:color-mix(in srgb,var(--md-on-surface) 4%,transparent)}
+.trip-tab.active{
+  color:var(--md-primary);
+  border-bottom-color:var(--md-primary);
+}
+
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* ================================================================
+   OVERVIEW
+   ================================================================ */
+.overview-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:.875rem;margin-bottom:1.25rem;
+}
+.overview-card{
+  background:var(--md-surface-container-lowest);
+  border:1px solid var(--md-outline-variant);
+  border-radius:var(--md-shape-md);
+  padding:1rem 1.125rem;
+}
+.overview-card-label{
+  font:600 var(--md-label-sm);
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--md-on-surface-variant);margin-bottom:.375rem;
+}
+.overview-card-value{
+  font:500 var(--md-body-lg);
+  color:var(--md-on-surface);
+}
+
+.overview-description{
+  background:var(--md-surface-container-lowest);
+  border:1px solid var(--md-outline-variant);
+  border-radius:var(--md-shape-md);
+  padding:1.125rem;
+  color:var(--md-on-surface-variant);
+  font:var(--md-body-lg);line-height:1.7;
+  margin-bottom:1.25rem;min-height:3rem;
+}
+
+/* AI Summary — MD3 Filled Card variant */
+.ai-summary-card{
+  background:var(--md-tertiary-container);
+  border-radius:var(--md-shape-lg);
+  padding:1.25rem;
+  border:none;
+}
+.ai-summary-header{
+  display:flex;align-items:center;gap:.75rem;
+  margin-bottom:.75rem;
+  font:500 var(--md-title-sm);
+  color:var(--md-on-tertiary-container);
+}
+.ai-badge{
+  background:var(--md-tertiary);
+  color:var(--md-on-tertiary);
+  border-radius:var(--md-shape-full);
+  font:600 var(--md-label-sm);
+  padding:.2rem .6rem;letter-spacing:.04em;
+}
+.ai-summary-header .btn-sm{margin-left:auto}
+.ai-summary-content{
+  font:var(--md-body-md);
+  color:var(--md-on-tertiary-container);
+  line-height:1.7;
+}
+
+/* ================================================================
+   TAB TOOLBAR
+   ================================================================ */
+.tab-toolbar{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  margin-bottom:1.125rem;
+}
+.tab-toolbar h3{
+  font-family:var(--font-display);
+  font:500 var(--md-title-lg);
+  color:var(--md-on-surface);
+}
+.toolbar-group{display:flex;gap:.5rem}
+
+/* ================================================================
+   ITINERARY
+   ================================================================ */
+.itinerary-container{display:flex;flex-direction:column;gap:1rem}
+.itinerary-empty{
+  text-align:center;color:var(--md-on-surface-variant);
+  padding:3rem 1rem;
+  border:1px dashed var(--md-outline-variant);
+  border-radius:var(--md-shape-lg);
+  font:var(--md-body-lg);
+}
+
+/* MD3 Elevated Card */
+.day-block{
+  background:var(--md-surface-container-lowest);
+  border:1px solid var(--md-outline-variant);
+  border-radius:var(--md-shape-lg);
+  overflow:hidden;
+  box-shadow:0 1px 2px rgba(0,0,0,.06);
+}
+.day-header{
+  display:flex;align-items:center;
+  justify-content:space-between;
+  padding:.875rem 1rem;
+  background:var(--md-elev-1);
+  border-bottom:1px solid var(--md-outline-variant);
+  cursor:pointer;
+}
+.day-header-left{display:flex;align-items:center;gap:.75rem}
+.day-number{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--md-primary);
+  color:var(--md-on-primary);
+  font:700 var(--md-label-lg);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.day-title-text{font:500 var(--md-title-sm);color:var(--md-on-surface)}
+.day-date-text{font:var(--md-body-sm);color:var(--md-on-surface-variant);margin-top:1px}
+.day-actions{display:flex;gap:.25rem}
+
+.day-body{padding:1rem}
+.day-events{display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem}
+
+.event-item{
+  display:flex;align-items:flex-start;gap:.75rem;
+  padding:.625rem .75rem;
+  background:var(--md-surface-container-low);
+  border-radius:var(--md-shape-md);
+  transition:var(--transition);
+  border:1px solid transparent;
+}
+.event-item:hover{border-color:var(--md-outline-variant);background:var(--md-surface-container)}
+
+.event-time{
+  font:500 var(--md-label-md);
+  color:var(--md-primary);
+  font-family:var(--font-mono);
+  white-space:nowrap;flex-shrink:0;
+  min-width:48px;padding-top:2px;
+}
+.event-content{flex:1}
+.event-title{font:500 var(--md-body-md);color:var(--md-on-surface)}
+.event-detail{font:var(--md-body-sm);color:var(--md-on-surface-variant);margin-top:2px}
+.event-category{
+  font:600 var(--md-label-sm);padding:.2rem .625rem;
+  border-radius:var(--md-shape-full);flex-shrink:0;
+}
+.add-event-btn{
+  display:flex;align-items:center;gap:.5rem;
+  background:none;
+  border:1px dashed var(--md-outline-variant);
+  border-radius:var(--md-shape-md);
+  color:var(--md-on-surface-variant);
+  font:var(--md-label-lg);
+  padding:.5rem .875rem;cursor:pointer;width:100%;
+  transition:var(--transition);
+}
+.add-event-btn:hover{border-color:var(--md-primary);color:var(--md-primary);background:color-mix(in srgb,var(--md-primary) 4%,transparent)}
+
+/* Category chips */
+.cat-transport{background:var(--md-primary-container);color:var(--md-on-primary-container)}
+.cat-food{background:#fef3c7;color:#92400e}
+.cat-activity{background:var(--md-tertiary-container);color:var(--md-on-tertiary-container)}
+.cat-lodging{background:#d1fae5;color:#065f46}
+.cat-other{background:var(--md-surface-container-high);color:var(--md-on-surface-variant)}
+
+/* ================================================================
+   PACKING
+   ================================================================ */
+.packing-categories{display:flex;flex-direction:column;gap:.875rem}
+
+.packing-category{
+  background:var(--md-surface-container-lowest);
+  border:1px solid var(--md-outline-variant);
+  border-radius:var(--md-shape-lg);overflow:hidden;
+}
+.packing-cat-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.75rem 1rem;
+  background:var(--md-elev-1);
+  border-bottom:1px solid var(--md-outline-variant);
+}
+.packing-cat-name{font:600 var(--md-label-lg);color:var(--md-on-surface)}
+.packing-cat-progress{font:var(--md-label-sm);color:var(--md-on-surface-variant)}
+
+.packing-items{padding:.5rem}
+.packing-item{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.5rem .5rem;border-radius:var(--md-shape-sm);
+  transition:var(--transition);
+}
+.packing-item:hover{background:var(--md-surface-container-low)}
+
+/* MD3 Checkbox */
+.packing-checkbox{
+  width:20px;height:20px;border-radius:var(--md-shape-xs);
+  border:2px solid var(--md-outline);
+  background:none;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  transition:var(--transition);
+}
+.packing-checkbox.checked{background:var(--md-primary);border-color:var(--md-primary)}
+.packing-checkbox.checked::after{
+  content:'✓';font-size:.7rem;color:var(--md-on-primary);font-weight:700;
+}
+.packing-item-name{flex:1;font:var(--md-body-md);color:var(--md-on-surface)}
+.packing-item-name.done{text-decoration:line-through;color:var(--md-on-surface-variant)}
+.packing-qty{font:var(--md-label-sm);color:var(--md-on-surface-variant);font-family:var(--font-mono)}
+
+.packing-summary{
+  background:var(--md-surface-container-low);
+  border-radius:var(--md-shape-md);
+  padding:.875rem 1rem;margin-top:1rem;
+  font:var(--md-body-md);color:var(--md-on-surface-variant);
+  text-align:center;
+  border:1px solid var(--md-outline-variant);
+}
+
+/* ================================================================
+   BUDGET
+   ================================================================ */
+.budget-overview{
+  background:var(--md-surface-container-lowest);
+  border:1px solid var(--md-outline-variant);
+  border-radius:var(--md-shape-lg);
+  padding:1.25rem;margin-bottom:1.25rem;
+}
+.budget-totals{display:flex;gap:2rem;flex-wrap:wrap;margin-bottom:1rem}
+.budget-total-item{}
+.budget-total-label{
+  font:600 var(--md-label-sm);
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--md-on-surface-variant);margin-bottom:.25rem;
+}
+.budget-total-value{
+  font-family:var(--font-display);
+  font-size:1.75rem;font-weight:700;
+  color:var(--md-on-surface);
+}
+.budget-total-value.over{color:var(--md-error)}
+.budget-total-value.ok{color:#065f46}
+
+.budget-bar-item{margin-top:.5rem}
+.budget-bar-label{
+  display:flex;justify-content:space-between;
+  font:var(--md-label-md);color:var(--md-on-surface-variant);
+  margin-bottom:.375rem;
+}
+.budget-bar-track{
+  height:8px;background:var(--md-surface-container-high);
+  border-radius:var(--md-shape-full);overflow:hidden;
+}
+.budget-bar-fill{
+  height:100%;border-radius:var(--md-shape-full);
+  background:var(--md-primary);
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+.budget-bar-fill.over{background:var(--md-error)}
+
+.expenses-list{display:flex;flex-direction:column;gap:.625rem}
+.expense-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.875rem 1rem;
+  background:var(--md-surface-container-lowest);
+  border:1px solid var(--md-outline-variant);
+  border-radius:var(--md-shape-md);
+  transition:var(--transition);
+}
+.expense-item:hover{border-color:var(--md-primary);background:var(--md-elev-1)}
+.expense-left{display:flex;align-items:center;gap:.875rem}
+.expense-icon{
+  width:40px;height:40px;border-radius:var(--md-shape-full);
+  background:var(--md-primary-container);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;flex-shrink:0;
+}
+.expense-name{font:500 var(--md-body-md);color:var(--md-on-surface)}
+.expense-cat{font:var(--md-body-sm);color:var(--md-on-surface-variant);margin-top:1px}
+.expense-amount{
+  font-family:var(--font-mono);font-weight:600;font-size:.95rem;
+  color:var(--md-primary);
+}
+
+/* ================================================================
+   NOTES
+   ================================================================ */
+.notes-container{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:1rem;
+}
+.note-card{
+  background:var(--md-surface-container-lowest);
+  border:1px solid var(--md-outline-variant);
+  border-radius:var(--md-shape-lg);
+  padding:1.25rem;cursor:pointer;
+  transition:var(--transition-md);
+  min-height:140px;display:flex;
+  flex-direction:column;gap:.5rem;
+}
+.note-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.1);border-color:var(--md-primary);transform:translateY(-2px)}
+.note-title{font:500 var(--md-title-sm);color:var(--md-on-surface)}
+.note-content{font:var(--md-body-sm);color:var(--md-on-surface-variant);line-height:1.6;flex:1}
+.note-date{font:var(--md-label-sm);color:var(--md-outline);font-family:var(--font-mono)}
+.note-actions{display:flex;gap:.5rem;margin-top:.25rem}
+
+/* ================================================================
+   MODAL — MD3 Dialog
+   ================================================================ */
+.modal-overlay{
+  position:fixed;inset:0;
+  background:var(--md-scrim);
+  display:flex;align-items:center;justify-content:center;
+  z-index:1000;padding:1rem;
+  opacity:0;pointer-events:none;
+  transition:opacity var(--transition-md);
+}
+.modal-overlay.active{opacity:1;pointer-events:all}
+
+.modal{
+  background:var(--md-surface-container-high);
+  border-radius:var(--md-shape-xl);
+  width:100%;max-width:520px;max-height:90vh;
+  display:flex;flex-direction:column;
+  box-shadow:0 8px 32px rgba(0,0,0,.2);
+  transform:scale(.9) translateY(16px);
+  transition:transform var(--transition-md);
+  overflow:hidden;
+}
+.modal-overlay.active .modal{transform:scale(1) translateY(0)}
+
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.25rem 1.5rem 1rem;
+}
+.modal-header h3{
+  font-family:var(--font-display);
+  font:500 var(--md-headline-sm);
+  color:var(--md-on-surface);
+}
+.modal-body{padding:0 1.5rem 1rem;overflow-y:auto;flex:1;scrollbar-width:thin}
+.modal-footer{
+  padding:1rem 1.5rem;
+  display:flex;justify-content:flex-end;gap:.75rem;
+  border-top:1px solid var(--md-outline-variant);
+}
+
+/* MD3 Form Fields */
+.form-group{margin-bottom:1.25rem}
+.form-group:last-child{margin-bottom:0}
+.form-label{
+  display:block;
+  font:600 var(--md-label-sm);
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--md-on-surface-variant);
+  margin-bottom:.5rem;
+}
+.form-input,.form-select,.form-textarea{
+  width:100%;
+  background:var(--md-surface-container-lowest);
+  border:1px solid var(--md-outline);
+  border-radius:var(--md-shape-sm);
+  color:var(--md-on-surface);
+  font-family:var(--font-body);font-size:.9rem;
+  padding:.75rem 1rem;
+  transition:var(--transition);outline:none;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  border-color:var(--md-primary);
+  border-width:2px;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--md-primary) 12%,transparent);
+}
+.form-textarea{resize:vertical;min-height:80px}
+.form-select option{background:var(--md-surface-container-highest)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+
+/* Type selector chips */
+.type-selector{
+  display:flex;flex-wrap:wrap;gap:.5rem;
+}
+.type-option{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.5rem .875rem;
+  background:var(--md-surface-container-lowest);
+  border:1px solid var(--md-outline-variant);
+  border-radius:var(--md-shape-full);
+  cursor:pointer;transition:var(--transition);
+  font:var(--md-label-lg);color:var(--md-on-surface);
+}
+.type-option:hover{border-color:var(--md-primary);background:color-mix(in srgb,var(--md-primary) 4%,transparent)}
+.type-option.selected{
+  background:var(--md-primary-container);
+  border-color:var(--md-primary);
+  color:var(--md-on-primary-container);font-weight:600;
+}
+.type-option-icon{font-size:1rem}
+
+/* ================================================================
+   SETTINGS PANEL — MD3 Side Sheet
+   ================================================================ */
+.settings-panel{
+  position:fixed;top:0;right:0;bottom:0;width:320px;
+  background:var(--md-surface-container-low);
+  border-left:1px solid var(--md-outline-variant);
+  z-index:500;
+  transform:translateX(100%);
+  transition:transform var(--transition-md);
+  display:flex;flex-direction:column;
+}
+.settings-panel.open{transform:translateX(0)}
+
+.settings-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.25rem 1.5rem;
+  border-bottom:1px solid var(--md-outline-variant);
+}
+.settings-header h3{
+  font-family:var(--font-display);
+  font:500 var(--md-title-lg);
+  color:var(--md-on-surface);
+}
+.settings-body{padding:1.5rem;overflow-y:auto;flex:1}
+.settings-section{margin-bottom:2rem}
+.settings-label{
+  font:600 var(--md-label-sm);
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--md-on-surface-variant);margin-bottom:.5rem;
+}
+.settings-desc{font:var(--md-body-sm);color:var(--md-on-surface-variant);margin-bottom:.75rem;line-height:1.5}
+.settings-input{
+  width:100%;
+  background:var(--md-surface-container-lowest);
+  border:1px solid var(--md-outline);
+  border-radius:var(--md-shape-sm);
+  color:var(--md-on-surface);
+  font-family:var(--font-mono);font-size:.82rem;
+  padding:.75rem 1rem;margin-bottom:.75rem;
+  outline:none;transition:var(--transition);
+}
+.settings-input:focus{border-color:var(--md-primary);border-width:2px}
+.settings-save-btn{width:100%}
+.settings-danger-zone .settings-label{color:var(--md-error)}
+
+/* ================================================================
+   SIDEBAR OVERLAY (mobile)
+   ================================================================ */
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;
+  background:var(--md-scrim);z-index:99;
+  opacity:0;pointer-events:none;
+  transition:opacity var(--transition-md);
+}
+
+/* ================================================================
+   SNACKBAR / TOAST — MD3
+   ================================================================ */
+.toast{
+  position:fixed;bottom:1.5rem;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--md-inverse-surface);
+  color:var(--md-inverse-on-surface);
+  border-radius:var(--md-shape-sm);
+  padding:.75rem 1.5rem;
+  font:500 var(--md-body-md);
+  box-shadow:0 4px 16px rgba(0,0,0,.2);
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  z-index:9999;pointer-events:none;white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{background:#065f46;color:#d1fae5}
+.toast.error{background:var(--md-error);color:var(--md-on-error)}
+
+/* ================================================================
+   LOADING
+   ================================================================ */
+.spinner{
+  width:20px;height:20px;
+  border:2.5px solid var(--md-outline-variant);
+  border-top-color:var(--md-primary);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+  display:inline-block;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ai-loading{display:flex;align-items:center;gap:.5rem;font:var(--md-body-sm);color:var(--md-on-surface-variant)}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media(max-width:768px){
+  .sidebar{
+    position:fixed;left:0;top:0;bottom:0;
+    transform:translateX(-100%);z-index:200;
+  }
+  .sidebar.open{transform:translateX(0)}
+  .sidebar-close-btn{display:flex}
+  .sidebar-overlay{display:block}
+  .sidebar-overlay.active{opacity:1;pointer-events:all}
+  .menu-btn{display:flex}
+  .trip-header{flex-direction:column}
+  .form-row{grid-template-columns:1fr}
+  .dashboard-hero{flex-direction:column;text-align:center}
+  .hero-icon{display:none}
+  .modal{max-width:100%;border-bottom-left-radius:0;border-bottom-right-radius:0}
+  .modal-overlay{align-items:flex-end;padding:0}
+  .settings-panel{width:100%}
+  .notes-container{grid-template-columns:1fr}
+}
+
+/* Scrollbars */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--md-outline-variant);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--md-outline)}
+
+.hidden{display:none!important}
+</style>
 </head>
 <body>
 
-  <!-- PIN Auth Screen -->
-  <div id="auth-screen" class="screen active">
-    <div class="auth-bg">
-      <div class="auth-orb orb-1"></div>
-      <div class="auth-orb orb-2"></div>
-      <div class="auth-orb orb-3"></div>
+<!-- PIN Auth Screen -->
+<div id="auth-screen" class="screen active">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">🗺️</div>
+      <span class="auth-logo-text">WanderPlan</span>
     </div>
-    <div class="auth-card">
-      <div class="auth-logo">
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-          <circle cx="20" cy="20" r="20" fill="url(#logoGrad)"/>
-          <path d="M20 8 C14 8 10 13 10 19 C10 27 20 33 20 33 C20 33 30 27 30 19 C30 13 26 8 20 8Z" fill="white" opacity="0.9"/>
-          <circle cx="20" cy="19" r="4" fill="url(#logoGrad2)"/>
-          <defs>
-            <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
-              <stop offset="0%" stop-color="#4f8ef7"/>
-              <stop offset="100%" stop-color="#a855f7"/>
-            </linearGradient>
-            <linearGradient id="logoGrad2" x1="0" y1="0" x2="40" y2="40">
-              <stop offset="0%" stop-color="#4f8ef7"/>
-              <stop offset="100%" stop-color="#a855f7"/>
-            </linearGradient>
-          </defs>
-        </svg>
+
+    <div id="auth-setup" style="display:none">
+      <h2>Create Your PIN</h2>
+      <p class="auth-sub">Choose a 4–6 digit PIN to secure your trips</p>
+      <div class="pin-display" id="setup-pin-display">
+        <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+      </div>
+      <div id="setup-pin-pad" class="pin-pad"></div>
+      <div id="setup-confirm" style="display:none;margin-top:1.5rem">
+        <p class="auth-sub">Confirm your PIN</p>
+        <div class="pin-display" id="confirm-pin-display">
+          <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+        </div>
+        <div id="confirm-pin-pad" class="pin-pad"></div>
+      </div>
+      <div id="auth-error" class="auth-error"></div>
+    </div>
+
+    <div id="auth-login">
+      <h2>Welcome back</h2>
+      <p class="auth-sub">Enter your PIN to access your trips</p>
+      <div class="pin-display" id="login-pin-display">
+        <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+      </div>
+      <div id="login-pin-pad" class="pin-pad"></div>
+      <div id="login-error" class="auth-error"></div>
+      <button class="auth-link" id="reset-pin-btn">Forgot PIN? Reset data</button>
+    </div>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="app-screen" class="screen">
+  <nav id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">🗺️</div>
         <span>WanderPlan</span>
       </div>
+      <button class="icon-btn sidebar-close-btn" id="sidebar-close">✕</button>
+    </div>
+    <button class="btn-new-trip" id="new-trip-btn">
+      <span class="plus-icon">+</span> New Trip
+    </button>
+    <div class="sidebar-section-label">My Trips</div>
+    <div id="trips-list" class="trips-list">
+      <div class="trips-empty">No trips yet. Create your first!</div>
+    </div>
+    <div class="sidebar-footer">
+      <button class="sidebar-footer-btn" id="settings-btn">⚙️ Settings</button>
+      <button class="sidebar-footer-btn" id="lock-btn">🔒 Lock</button>
+    </div>
+  </nav>
 
-      <div id="auth-setup" class="auth-mode" style="display:none;">
-        <h2>Create Your PIN</h2>
-        <p class="auth-sub">Choose a 4–6 digit PIN to secure your trips</p>
-        <div class="pin-display" id="setup-pin-display">
-          <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
-        </div>
-        <div class="pin-pad" id="setup-pin-pad"></div>
-        <div id="setup-confirm" style="display:none;">
-          <p class="auth-sub" style="margin-top:1.5rem;">Confirm your PIN</p>
-          <div class="pin-display" id="confirm-pin-display">
-            <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
-          </div>
-        </div>
-        <div id="auth-error" class="auth-error"></div>
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <main id="main-content" class="main-content">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menu-btn">☰</button>
+      <div class="topbar-title" id="topbar-title">WanderPlan</div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="ai-assist-btn" title="AI Assistant">✨</button>
       </div>
+    </header>
 
-      <div id="auth-login" class="auth-mode">
-        <h2>Welcome back</h2>
-        <p class="auth-sub">Enter your PIN to access your trips</p>
-        <div class="pin-display" id="login-pin-display">
-          <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+    <!-- Dashboard -->
+    <div id="dashboard-view" class="view active">
+      <div class="dashboard-hero">
+        <div class="dashboard-hero-text">
+          <h1>Plan your next adventure</h1>
+          <p>From quick day trips to month-long expeditions — organized in one place.</p>
+          <button class="btn-primary-lg" id="dashboard-new-trip-btn">+ Create New Trip</button>
         </div>
-        <div class="pin-pad" id="login-pin-pad"></div>
-        <div id="login-error" class="auth-error"></div>
-        <button class="auth-link" id="reset-pin-btn">Forgot PIN? Reset data</button>
+        <div class="hero-icon">✈️</div>
+      </div>
+      <div class="dashboard-stats" id="dashboard-stats"></div>
+      <div class="dashboard-recent">
+        <h3>Recent Trips</h3>
+        <div id="recent-trips-grid" class="trips-grid">
+          <div class="trips-grid-empty">Create a trip to get started ✈️</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Main App -->
-  <div id="app-screen" class="screen">
-
-    <!-- Sidebar -->
-    <nav id="sidebar" class="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-logo">
-          <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
-            <circle cx="20" cy="20" r="20" fill="url(#sLogoGrad)"/>
-            <path d="M20 8 C14 8 10 13 10 19 C10 27 20 33 20 33 C20 33 30 27 30 19 C30 13 26 8 20 8Z" fill="white" opacity="0.9"/>
-            <circle cx="20" cy="19" r="4" fill="url(#sLogoGrad2)"/>
-            <defs>
-              <linearGradient id="sLogoGrad" x1="0" y1="0" x2="40" y2="40">
-                <stop offset="0%" stop-color="#4f8ef7"/>
-                <stop offset="100%" stop-color="#a855f7"/>
-              </linearGradient>
-              <linearGradient id="sLogoGrad2" x1="0" y1="0" x2="40" y2="40">
-                <stop offset="0%" stop-color="#4f8ef7"/>
-                <stop offset="100%" stop-color="#a855f7"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <span>WanderPlan</span>
+    <!-- Trip View -->
+    <div id="trip-view" class="view">
+      <div class="trip-header">
+        <div class="trip-header-info">
+          <div class="trip-type-badge" id="trip-type-badge">Day Trip</div>
+          <h2 id="trip-title-display">Trip Name</h2>
+          <div class="trip-meta" id="trip-meta"></div>
         </div>
-        <button id="sidebar-close" class="icon-btn sidebar-close-btn">✕</button>
-      </div>
-
-      <button class="btn-new-trip" id="new-trip-btn">
-        <span>＋</span> New Trip
-      </button>
-
-      <div class="sidebar-section-label">MY TRIPS</div>
-      <div id="trips-list" class="trips-list">
-        <div class="trips-empty">No trips yet. Create your first!</div>
-      </div>
-
-      <div class="sidebar-footer">
-        <button class="sidebar-footer-btn" id="settings-btn">⚙ Settings</button>
-        <button class="sidebar-footer-btn" id="lock-btn">🔒 Lock</button>
-      </div>
-    </nav>
-
-    <!-- Overlay for mobile sidebar -->
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
-
-    <!-- Main Content -->
-    <main id="main-content" class="main-content">
-
-      <!-- Top Bar -->
-      <header class="topbar">
-        <button class="icon-btn menu-btn" id="menu-btn">☰</button>
-        <div class="topbar-title" id="topbar-title">WanderPlan</div>
-        <div class="topbar-actions">
-          <button class="icon-btn" id="ai-assist-btn" title="AI Assistant">✨</button>
-        </div>
-      </header>
-
-      <!-- Dashboard (no trip selected) -->
-      <div id="dashboard-view" class="view active">
-        <div class="dashboard-hero">
-          <div class="dashboard-hero-text">
-            <h1>Plan your next<br/><em>adventure</em></h1>
-            <p>From quick day trips to month-long expeditions — everything in one place.</p>
-            <button class="btn-primary-lg" id="dashboard-new-trip-btn">＋ Create New Trip</button>
-          </div>
-          <div class="dashboard-hero-art">
-            <div class="hero-globe"></div>
-          </div>
-        </div>
-        <div class="dashboard-stats" id="dashboard-stats">
-          <!-- populated by JS -->
-        </div>
-        <div class="dashboard-recent">
-          <h3>Recent Trips</h3>
-          <div id="recent-trips-grid" class="trips-grid">
-            <div class="trips-grid-empty">Create a trip to get started ✈️</div>
-          </div>
+        <div class="trip-header-actions">
+          <button class="btn-ghost" id="edit-trip-btn">✏️ Edit</button>
+          <button class="btn-ghost btn-danger" id="delete-trip-btn">🗑 Delete</button>
         </div>
       </div>
 
-      <!-- Trip View -->
-      <div id="trip-view" class="view">
-        <div class="trip-header">
-          <div class="trip-header-info">
-            <div class="trip-type-badge" id="trip-type-badge">Day Trip</div>
-            <h2 id="trip-title-display">Trip Name</h2>
-            <div class="trip-meta" id="trip-meta"></div>
-          </div>
-          <div class="trip-header-actions">
-            <button class="btn-ghost" id="edit-trip-btn">✏️ Edit</button>
-            <button class="btn-ghost btn-danger" id="delete-trip-btn">🗑 Delete</button>
-          </div>
+      <div class="trip-tabs">
+        <button class="trip-tab active" data-tab="overview">Overview</button>
+        <button class="trip-tab" data-tab="itinerary">Itinerary</button>
+        <button class="trip-tab" data-tab="packing">Packing</button>
+        <button class="trip-tab" data-tab="budget">Budget</button>
+        <button class="trip-tab" data-tab="notes">Notes</button>
+      </div>
+
+      <div class="tab-content active" id="tab-overview">
+        <div class="overview-grid">
+          <div class="overview-card"><div class="overview-card-label">Destination(s)</div><div class="overview-card-value" id="ov-destinations">—</div></div>
+          <div class="overview-card"><div class="overview-card-label">Dates</div><div class="overview-card-value" id="ov-dates">—</div></div>
+          <div class="overview-card"><div class="overview-card-label">Duration</div><div class="overview-card-value" id="ov-duration">—</div></div>
+          <div class="overview-card"><div class="overview-card-label">Travelers</div><div class="overview-card-value" id="ov-travelers">—</div></div>
+          <div class="overview-card"><div class="overview-card-label">Budget</div><div class="overview-card-value" id="ov-budget">—</div></div>
+          <div class="overview-card"><div class="overview-card-label">Status</div><div class="overview-card-value" id="ov-status">Planning</div></div>
         </div>
-
-        <!-- Trip Tabs -->
-        <div class="trip-tabs">
-          <button class="trip-tab active" data-tab="overview">Overview</button>
-          <button class="trip-tab" data-tab="itinerary">Itinerary</button>
-          <button class="trip-tab" data-tab="packing">Packing</button>
-          <button class="trip-tab" data-tab="budget">Budget</button>
-          <button class="trip-tab" data-tab="notes">Notes</button>
-        </div>
-
-        <!-- Overview Tab -->
-        <div class="tab-content active" id="tab-overview">
-          <div class="overview-grid">
-            <div class="overview-card">
-              <div class="overview-card-label">Destination(s)</div>
-              <div class="overview-card-value" id="ov-destinations">—</div>
-            </div>
-            <div class="overview-card">
-              <div class="overview-card-label">Dates</div>
-              <div class="overview-card-value" id="ov-dates">—</div>
-            </div>
-            <div class="overview-card">
-              <div class="overview-card-label">Duration</div>
-              <div class="overview-card-value" id="ov-duration">—</div>
-            </div>
-            <div class="overview-card">
-              <div class="overview-card-label">Travelers</div>
-              <div class="overview-card-value" id="ov-travelers">—</div>
-            </div>
-            <div class="overview-card">
-              <div class="overview-card-label">Budget</div>
-              <div class="overview-card-value" id="ov-budget">—</div>
-            </div>
-            <div class="overview-card">
-              <div class="overview-card-label">Status</div>
-              <div class="overview-card-value" id="ov-status">Planning</div>
-            </div>
+        <div class="overview-description" id="ov-description"></div>
+        <div class="ai-summary-card" id="ai-summary-card">
+          <div class="ai-summary-header">
+            <span class="ai-badge">✨ AI</span>
+            <span>Trip Summary</span>
+            <button class="btn-sm" id="generate-summary-btn">Generate</button>
           </div>
-          <div class="overview-description" id="ov-description"></div>
-
-          <!-- Quick AI Summary -->
-          <div class="ai-summary-card" id="ai-summary-card">
-            <div class="ai-summary-header">
-              <span class="ai-badge">✨ AI</span>
-              <span>Trip Summary</span>
-              <button class="btn-sm" id="generate-summary-btn">Generate</button>
-            </div>
-            <div class="ai-summary-content" id="ai-summary-content">
-              <em>Click Generate to get an AI-powered trip summary and tips.</em>
-            </div>
-          </div>
-        </div>
-
-        <!-- Itinerary Tab -->
-        <div class="tab-content" id="tab-itinerary">
-          <div class="tab-toolbar">
-            <h3>Day-by-Day Itinerary</h3>
-            <button class="btn-primary" id="add-day-btn">＋ Add Day</button>
-          </div>
-          <div id="itinerary-container" class="itinerary-container">
-            <div class="itinerary-empty">No days added yet. Click "Add Day" to start building your itinerary.</div>
-          </div>
-        </div>
-
-        <!-- Packing Tab -->
-        <div class="tab-content" id="tab-packing">
-          <div class="tab-toolbar">
-            <h3>Packing List</h3>
-            <div class="toolbar-group">
-              <button class="btn-ghost btn-sm" id="ai-packing-btn">✨ AI Suggest</button>
-              <button class="btn-primary" id="add-packing-btn">＋ Add Item</button>
-            </div>
-          </div>
-          <div class="packing-categories" id="packing-categories">
-            <div class="itinerary-empty">No items yet. Add items or use AI to generate a list.</div>
-          </div>
-          <div class="packing-summary" id="packing-summary"></div>
-        </div>
-
-        <!-- Budget Tab -->
-        <div class="tab-content" id="tab-budget">
-          <div class="tab-toolbar">
-            <h3>Budget Tracker</h3>
-            <button class="btn-primary" id="add-expense-btn">＋ Add Expense</button>
-          </div>
-          <div class="budget-overview" id="budget-overview">
-            <!-- populated by JS -->
-          </div>
-          <div class="expenses-list" id="expenses-list">
-            <div class="itinerary-empty">No expenses tracked yet.</div>
-          </div>
-        </div>
-
-        <!-- Notes Tab -->
-        <div class="tab-content" id="tab-notes">
-          <div class="tab-toolbar">
-            <h3>Notes & Ideas</h3>
-            <button class="btn-primary" id="add-note-btn">＋ Add Note</button>
-          </div>
-          <div id="notes-container" class="notes-container">
-            <div class="itinerary-empty">No notes yet. Capture ideas, links, or anything useful.</div>
-          </div>
+          <div class="ai-summary-content" id="ai-summary-content"><em>Click Generate for an AI trip summary and tips.</em></div>
         </div>
       </div>
 
-    </main>
-  </div>
+      <div class="tab-content" id="tab-itinerary">
+        <div class="tab-toolbar">
+          <h3>Day-by-Day Itinerary</h3>
+          <button class="btn-primary" id="add-day-btn">+ Add Day</button>
+        </div>
+        <div id="itinerary-container" class="itinerary-container">
+          <div class="itinerary-empty">No days added yet. Click "Add Day" to build your itinerary.</div>
+        </div>
+      </div>
 
-  <!-- Modals -->
-  <div id="modal-overlay" class="modal-overlay">
-    <div id="modal" class="modal">
-      <div class="modal-header">
-        <h3 id="modal-title">Modal</h3>
-        <button class="icon-btn modal-close" id="modal-close">✕</button>
+      <div class="tab-content" id="tab-packing">
+        <div class="tab-toolbar">
+          <h3>Packing List</h3>
+          <div class="toolbar-group">
+            <button class="btn-tonal" id="ai-packing-btn">✨ AI Suggest</button>
+            <button class="btn-primary" id="add-packing-btn">+ Add Item</button>
+          </div>
+        </div>
+        <div class="packing-categories" id="packing-categories">
+          <div class="itinerary-empty">No items yet. Add items or use AI to generate a list.</div>
+        </div>
+        <div class="packing-summary" id="packing-summary"></div>
       </div>
-      <div id="modal-body" class="modal-body"></div>
-      <div id="modal-footer" class="modal-footer"></div>
-    </div>
-  </div>
 
-  <!-- Settings Panel -->
-  <div id="settings-panel" class="settings-panel">
-    <div class="settings-header">
-      <h3>Settings</h3>
-      <button class="icon-btn" id="settings-close">✕</button>
-    </div>
-    <div class="settings-body">
-      <div class="settings-section">
-        <div class="settings-label">AI API Key</div>
-        <p class="settings-desc">Store your Anthropic API key to enable AI features.</p>
-        <input type="password" id="api-key-input" class="settings-input" placeholder="sk-ant-..." />
-        <button class="btn-primary settings-save-btn" id="save-api-key-btn">Save Key</button>
+      <div class="tab-content" id="tab-budget">
+        <div class="tab-toolbar">
+          <h3>Budget Tracker</h3>
+          <button class="btn-primary" id="add-expense-btn">+ Add Expense</button>
+        </div>
+        <div class="budget-overview" id="budget-overview"></div>
+        <div class="expenses-list" id="expenses-list">
+          <div class="itinerary-empty">No expenses tracked yet.</div>
+        </div>
       </div>
-      <div class="settings-section">
-        <div class="settings-label">Change PIN</div>
-        <button class="btn-ghost" id="change-pin-btn">Change PIN</button>
-      </div>
-      <div class="settings-section settings-danger-zone">
-        <div class="settings-label">Danger Zone</div>
-        <button class="btn-ghost btn-danger" id="delete-all-btn">Delete All Data</button>
+
+      <div class="tab-content" id="tab-notes">
+        <div class="tab-toolbar">
+          <h3>Notes & Ideas</h3>
+          <button class="btn-primary" id="add-note-btn">+ Add Note</button>
+        </div>
+        <div id="notes-container" class="notes-container">
+          <div class="itinerary-empty">No notes yet. Capture ideas, links, or anything useful.</div>
+        </div>
       </div>
     </div>
+  </main>
+</div>
+
+<!-- Modal -->
+<div id="modal-overlay" class="modal-overlay">
+  <div id="modal" class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Modal</h3>
+      <button class="icon-btn modal-close" id="modal-close">✕</button>
+    </div>
+    <div id="modal-body" class="modal-body"></div>
+    <div id="modal-footer" class="modal-footer"></div>
   </div>
+</div>
 
-  <!-- Toast -->
-  <div id="toast" class="toast"></div>
+<!-- Settings Panel -->
+<div id="settings-panel" class="settings-panel">
+  <div class="settings-header">
+    <h3>Settings</h3>
+    <button class="icon-btn" id="settings-close">✕</button>
+  </div>
+  <div class="settings-body">
+    <div class="settings-section">
+      <div class="settings-label">AI API Key</div>
+      <p class="settings-desc">Store your Anthropic API key to enable AI features like trip summaries, packing lists, and itinerary suggestions.</p>
+      <input type="password" id="api-key-input" class="settings-input" placeholder="sk-ant-..." autocomplete="off"/>
+      <button class="btn-primary settings-save-btn" id="save-api-key-btn">Save Key</button>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">Security</div>
+      <button class="btn-ghost" id="change-pin-btn">Change PIN</button>
+    </div>
+    <div class="settings-section settings-danger-zone">
+      <div class="settings-label">Danger Zone</div>
+      <button class="btn-ghost btn-danger" id="delete-all-btn">Delete All Data</button>
+    </div>
+  </div>
+</div>
 
+<div id="toast" class="toast"></div>
+
+<!-- Firebase SDK (module type) -->
+<script type="module">
+// ================================================================
+// FIREBASE CONFIG — replace with your project values
+// ================================================================
+const firebaseConfig = {
+  apiKey:            "YOUR_API_KEY",
+  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId:         "YOUR_PROJECT_ID",
+  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId:             "YOUR_APP_ID"
+};
+
+// ================================================================
+// FIREBASE IMPORTS
+// ================================================================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc,
+  collection, getDocs, addDoc, serverTimestamp, orderBy, query
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+const ROOT = "wanderplan", META = "meta";
+const tripsCol       = ()         => collection(db, ROOT, META, "trips");
+const tripDoc        = id         => doc(db, ROOT, META, "trips", id);
+const subCol         = (tid, sub) => collection(db, ROOT, META, "trips", tid, sub);
+const subDoc         = (tid, sub, sid) => doc(db, ROOT, META, "trips", tid, sub, sid);
+
+// ── DB helpers ────────────────────────────────────────────────
+async function getMeta()       { const s=await getDoc(doc(db,ROOT,META)); return s.exists()?s.data():null; }
+async function setMeta(data)   { await setDoc(doc(db,ROOT,META),data,{merge:true}); }
+
+async function getAllTrips()   { const q=query(tripsCol(),orderBy("createdAt","desc")); const s=await getDocs(q); return s.docs.map(d=>({id:d.id,...d.data()})); }
+async function getTrip(id)    { const s=await getDoc(tripDoc(id)); return s.exists()?{id:s.id,...s.data()}:null; }
+async function createTrip(d)  { const r=await addDoc(tripsCol(),{...d,createdAt:serverTimestamp(),updatedAt:serverTimestamp()}); return r.id; }
+async function updateTrip(id,d){ await updateDoc(tripDoc(id),{...d,updatedAt:serverTimestamp()}); }
+async function deleteTrip(id) {
+  for(const s of ["days","packing","expenses","notes"]){const snap=await getDocs(subCol(id,s));for(const d of snap.docs)await deleteDoc(d.ref);}
+  await deleteDoc(tripDoc(id));
+}
+
+async function getDays(tid)         { const q=query(subCol(tid,"days"),orderBy("dayIndex","asc")); const s=await getDocs(q); return s.docs.map(d=>({id:d.id,...d.data()})); }
+async function addDay(tid,d)        { const r=await addDoc(subCol(tid,"days"),{...d,createdAt:serverTimestamp()}); return r.id; }
+async function updateDay(tid,did,d) { await updateDoc(subDoc(tid,"days",did),d); }
+async function deleteDay(tid,did)   { await deleteDoc(subDoc(tid,"days",did)); }
+
+async function getPackingItems(tid)        { const q=query(subCol(tid,"packing"),orderBy("createdAt","asc")); const s=await getDocs(q); return s.docs.map(d=>({id:d.id,...d.data()})); }
+async function addPackingItem(tid,d)       { const r=await addDoc(subCol(tid,"packing"),{...d,createdAt:serverTimestamp()}); return r.id; }
+async function updatePackingItem(tid,iid,d){ await updateDoc(subDoc(tid,"packing",iid),d); }
+async function deletePackingItem(tid,iid)  { await deleteDoc(subDoc(tid,"packing",iid)); }
+
+async function getExpenses(tid)     { const q=query(subCol(tid,"expenses"),orderBy("createdAt","desc")); const s=await getDocs(q); return s.docs.map(d=>({id:d.id,...d.data()})); }
+async function addExpense(tid,d)    { const r=await addDoc(subCol(tid,"expenses"),{...d,createdAt:serverTimestamp()}); return r.id; }
+async function deleteExpense(tid,eid){ await deleteDoc(subDoc(tid,"expenses",eid)); }
+
+async function getNotes(tid)        { const q=query(subCol(tid,"notes"),orderBy("createdAt","desc")); const s=await getDocs(q); return s.docs.map(d=>({id:d.id,...d.data()})); }
+async function addNote(tid,d)       { const r=await addDoc(subCol(tid,"notes"),{...d,createdAt:serverTimestamp()}); return r.id; }
+async function updateNote(tid,nid,d){ await updateDoc(subDoc(tid,"notes",nid),{...d,updatedAt:serverTimestamp()}); }
+async function deleteNote(tid,nid)  { await deleteDoc(subDoc(tid,"notes",nid)); }
+
+async function deleteAllData() { const ts=await getAllTrips(); for(const t of ts)await deleteTrip(t.id); await deleteDoc(doc(db,ROOT,META)); }
+
+// ── Auth ──────────────────────────────────────────────────────
+async function hashPin(pin) {
+  const buf=new TextEncoder().encode(pin+"wanderplan-salt-v1");
+  const dig=await crypto.subtle.digest("SHA-256",buf);
+  return Array.from(new Uint8Array(dig)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+async function isFirstRun()  { const m=await getMeta(); return !m||!m.pinHash; }
+async function setupPin(pin) { await setMeta({pinHash:await hashPin(pin)}); }
+async function verifyPin(pin){ const m=await getMeta(); if(!m?.pinHash)return false; return await hashPin(pin)===m.pinHash; }
+async function changePin(pin){ await setMeta({pinHash:await hashPin(pin)}); }
+
+let _unlocked=false;
+const setUnlocked=v=>_unlocked=v;
+
+// ── AI ────────────────────────────────────────────────────────
+const AI_URL="https://api.anthropic.com/v1/messages";
+const AI_MODEL="claude-sonnet-4-20250514";
+
+async function callAI(system,user) {
+  const meta=await getMeta();
+  if(!meta?.apiKey) throw new Error("No API key saved. Add one in Settings.");
+  const r=await fetch(AI_URL,{method:"POST",headers:{"Content-Type":"application/json","x-api-key":meta.apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:AI_MODEL,max_tokens:1024,system,messages:[{role:"user",content:user}]})});
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error?.message||`API error ${r.status}`);}
+  const d=await r.json(); return d.content?.[0]?.text||"";
+}
+
+async function generateTripSummary(trip) {
+  return callAI("You are a friendly travel assistant. 2-3 short paragraphs max.",
+    `Trip: ${trip.name}\nType: ${trip.type}\nDestination: ${trip.destinations||"?"}\nDates: ${trip.startDate||"?"}–${trip.endDate||"?"}\nTravelers: ${trip.travelers||1}\nBudget: $${trip.budget||"?"}\nDescription: ${trip.description||""}\n\nGive a trip summary, key tip, and what to prepare.`);
+}
+async function generatePackingList(trip) {
+  const raw=await callAI('Return ONLY valid JSON: {"categories":[{"name":"Clothing","items":[{"name":"T-shirts","qty":3}]}]}. No markdown.',
+    `Packing list for: Type=${trip.type}, Dest=${trip.destinations||"?"}, Duration=${trip.duration||"?"}, Dates=${trip.startDate||"?"}–${trip.endDate||"?"}, Travelers=${trip.travelers||1}. 4-6 categories. JSON only.`);
+  const c=raw.replace(/```json|```/g,"").trim(); return JSON.parse(c);
+}
+async function suggestDayItinerary(trip,day) {
+  const raw=await callAI('Return ONLY valid JSON: {"events":[{"time":"09:00","title":"...","detail":"...","category":"activity|food|transport|lodging|other"}]}. No markdown.',
+    `Day ${day.dayIndex+1} of "${trip.name}" in ${trip.destinations||"?"}. Date: ${day.date||"?"}. 4-6 events. JSON only.`);
+  const c=raw.replace(/```json|```/g,"").trim(); return JSON.parse(c);
+}
+
+// ================================================================
+// UI HELPERS
+// ================================================================
+const $ = id => document.getElementById(id);
+
+let toastTimer;
+function showToast(msg,type="") {
+  const el=$("toast"); clearTimeout(toastTimer);
+  el.textContent=msg; el.className=`toast ${type} show`;
+  toastTimer=setTimeout(()=>el.className="toast",3200);
+}
+
+function openModal(title,bodyHTML,footerHTML="") {
+  $("modal-title").textContent=title;
+  $("modal-body").innerHTML=bodyHTML;
+  $("modal-footer").innerHTML=footerHTML;
+  $("modal-overlay").classList.add("active");
+}
+function closeModal() { $("modal-overlay").classList.remove("active"); }
+
+function confirmDialog(msg) {
+  return new Promise(resolve=>{
+    openModal("Confirm",`<p style="color:var(--md-on-surface-variant);line-height:1.6;font:var(--md-body-lg)">${msg}</p>`,
+      `<button class="btn-ghost" id="conf-no">Cancel</button><button class="btn-primary" id="conf-yes" style="background:var(--md-error)">Confirm</button>`);
+    $("conf-yes").onclick=()=>{closeModal();resolve(true)};
+    $("conf-no").onclick=()=>{closeModal();resolve(false)};
+  });
+}
+
+function buildPinPad(padEl,displayEl,onComplete) {
+  let val="";
+  function refresh(){displayEl.querySelectorAll(".pin-dot").forEach((d,i)=>d.classList.toggle("filled",i<val.length))}
+  padEl.innerHTML="";
+  ["1","2","3","4","5","6","7","8","9","","0","⌫"].forEach(n=>{
+    const btn=document.createElement("button");
+    btn.className="pin-btn"+(n==="⌫"?" del":""); btn.textContent=n;
+    if(n===""){btn.style.visibility="hidden";padEl.appendChild(btn);return}
+    btn.onclick=()=>{
+      if(n==="⌫"){val=val.slice(0,-1);refresh();return}
+      if(val.length>=6)return;
+      val+=n;refresh();
+      if(val.length>=4)setTimeout(()=>{onComplete(val);val="";refresh()},150);
+    };
+    padEl.appendChild(btn);
+  });
+  refresh();
+  return{reset(){val="";refresh()}};
+}
+
+const TRIP_TYPES=[
+  {id:"day",label:"Day Trip",icon:"🌅"},{id:"weekend",label:"Weekend",icon:"🏕️"},
+  {id:"road",label:"Road Trip",icon:"🚗"},{id:"vacation",label:"Vacation",icon:"🏖️"},
+  {id:"business",label:"Business",icon:"💼"},{id:"adventure",label:"Adventure",icon:"🏔️"},
+  {id:"cruise",label:"Cruise",icon:"🚢"},{id:"other",label:"Other",icon:"✈️"},
+];
+const tripIcon  = t=>TRIP_TYPES.find(x=>x.id===t)?.icon||"✈️";
+const tripLabel = t=>TRIP_TYPES.find(x=>x.id===t)?.label||"Trip";
+
+function formatDate(d){if(!d)return"";return new Date(d+"T00:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});}
+function daysBetween(s,e){if(!s||!e)return null;return Math.round((new Date(e)-new Date(s))/86400000)+1;}
+
+const CAT_CLS={transport:"cat-transport",food:"cat-food",activity:"cat-activity",lodging:"cat-lodging",other:"cat-other"};
+const catClass=c=>CAT_CLS[c]||"cat-other";
+const CAT_ICONS={transport:"🚗",food:"🍽️",activity:"🎯",lodging:"🏨",other:"📌"};
+const EXP_ICONS={transport:"✈️",lodging:"🏨",food:"🍔",activity:"🎡",shopping:"🛍️",other:"💸"};
+
+function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+// ================================================================
+// APP STATE & INIT
+// ================================================================
+let state={trips:[],activeTrip:null,days:[],packingItems:[],expenses:[],notes:[]};
+
+async function init() {
+  $("modal-close").onclick=closeModal;
+  $("modal-overlay").addEventListener("click",e=>{if(e.target===$("modal-overlay"))closeModal();});
+
+  try {
+    if(await isFirstRun()) showAuthSetup();
+    else showAuthLogin();
+  } catch(e) {
+    console.error(e);
+    document.body.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:1rem;font-family:sans-serif;color:#191c1e;padding:2rem;text-align:center;"><div style="font-size:3rem">⚠️</div><div style="color:#ba1a1a;max-width:440px;font-size:1rem">${e.message}</div><div style="color:#41484d;font-size:.875rem">Edit the firebaseConfig object in the &lt;script&gt; tag inside index.html.</div></div>`;
+  }
+}
+
+// ── AUTH Setup ────────────────────────────────────────────────
+function showAuthSetup() {
+  $("auth-setup").style.display="block";
+  $("auth-login").style.display="none";
+  let firstPin=null;
+
+  buildPinPad($("setup-pin-pad"),$("setup-pin-display"),pin=>{
+    if(!firstPin){
+      firstPin=pin;
+      $("setup-confirm").style.display="block";
+      $("setup-pin-pad").style.display="none";
+      buildPinPad($("confirm-pin-pad"),$("confirm-pin-display"),async confirmPin=>{
+        if(confirmPin!==firstPin){
+          $("auth-error").textContent="PINs don't match. Try again.";
+          firstPin=null;
+          $("setup-confirm").style.display="none";
+          $("setup-pin-pad").style.display="";
+          showAuthSetup();return;
+        }
+        try{await setupPin(confirmPin);setUnlocked(true);bootApp();}
+        catch(e){$("auth-error").textContent="Setup failed: "+e.message;}
+      });
+    }
+  });
+}
+
+function showAuthLogin() {
+  $("auth-setup").style.display="none";
+  $("auth-login").style.display="block";
+  buildPinPad($("login-pin-pad"),$("login-pin-display"),async pin=>{
+    if(await verifyPin(pin)){setUnlocked(true);bootApp();}
+    else{$("login-error").textContent="Incorrect PIN. Try again.";setTimeout(()=>$("login-error").textContent="",2000);}
+  });
+  $("reset-pin-btn").onclick=async()=>{
+    const ok=await confirmDialog("This will delete ALL your trip data and reset the app. Are you sure?");
+    if(ok){await deleteAllData();showAuthSetup();}
+  };
+}
+
+// ── Boot ──────────────────────────────────────────────────────
+async function bootApp(){
+  $("auth-screen").classList.remove("active");
+  $("app-screen").classList.add("active");
+  setupNav();
+  await loadTrips();
+  showDashboard();
+}
+
+// ── Nav ───────────────────────────────────────────────────────
+function setupNav(){
+  $("menu-btn").onclick=openSidebar;
+  $("sidebar-close").onclick=closeSidebar;
+  $("sidebar-overlay").onclick=closeSidebar;
+  $("new-trip-btn").onclick=()=>{closeSidebar();openNewTripModal();};
+  $("dashboard-new-trip-btn").onclick=openNewTripModal;
+  $("lock-btn").onclick=()=>{setUnlocked(false);$("app-screen").classList.remove("active");$("auth-screen").classList.add("active");showAuthLogin();};
+  $("settings-btn").onclick=()=>{closeSidebar();openSettings();};
+  $("settings-close").onclick=closeSettings;
+  $("save-api-key-btn").onclick=saveApiKey;
+  $("change-pin-btn").onclick=openChangePinModal;
+  $("delete-all-btn").onclick=async()=>{
+    if(!await confirmDialog("Delete ALL trips and data? Cannot be undone."))return;
+    await deleteAllData();state.trips=[];state.activeTrip=null;
+    closeSettings();showDashboard();renderSidebar();showToast("All data deleted","error");
+  };
+  $("ai-assist-btn").onclick=()=>showToast("Use ✨ buttons inside trip tabs for AI features.");
+  document.querySelectorAll(".trip-tab").forEach(t=>t.onclick=()=>switchTab(t.dataset.tab));
+  $("edit-trip-btn").onclick=()=>openEditTripModal(state.activeTrip);
+  $("delete-trip-btn").onclick=async()=>{
+    if(!await confirmDialog(`Delete "${state.activeTrip.name}"? This cannot be undone.`))return;
+    await deleteTrip(state.activeTrip.id);state.activeTrip=null;
+    await loadTrips();showDashboard();showToast("Trip deleted");
+  };
+  $("add-day-btn").onclick=openAddDayModal;
+  $("add-packing-btn").onclick=openAddPackingModal;
+  $("ai-packing-btn").onclick=runAiPacking;
+  $("add-expense-btn").onclick=openAddExpenseModal;
+  $("add-note-btn").onclick=openAddNoteModal;
+  $("generate-summary-btn").onclick=runAiSummary;
+}
+function openSidebar(){$("sidebar").classList.add("open");$("sidebar-overlay").classList.add("active")}
+function closeSidebar(){$("sidebar").classList.remove("open");$("sidebar-overlay").classList.remove("active")}
+
+// ── Trips Load/Render ──────────────────────────────────────────
+async function loadTrips(){state.trips=await getAllTrips();renderSidebar();renderDashboard();}
+
+function renderSidebar(){
+  const list=$("trips-list");
+  if(!state.trips.length){list.innerHTML='<div class="trips-empty">No trips yet. Create your first!</div>';return;}
+  list.innerHTML=state.trips.map(t=>`
+    <div class="trip-item ${state.activeTrip?.id===t.id?"active":""}" data-id="${t.id}">
+      <span class="trip-item-icon">${tripIcon(t.type)}</span>
+      <div class="trip-item-info">
+        <div class="trip-item-name">${esc(t.name)}</div>
+        <div class="trip-item-meta">${tripLabel(t.type)}${t.startDate?" · "+formatDate(t.startDate):""}</div>
+      </div>
+    </div>`).join("");
+  list.querySelectorAll(".trip-item").forEach(el=>el.onclick=()=>{closeSidebar();openTrip(el.dataset.id);});
+}
+
+function renderDashboard(){
+  const total=state.trips.length,
+        upcoming=state.trips.filter(t=>t.startDate&&new Date(t.startDate)>=new Date()).length,
+        planned=state.trips.filter(t=>t.status==="planning").length;
+  $("dashboard-stats").innerHTML=`
+    <div class="stat-card"><div class="stat-card-value">${total}</div><div class="stat-card-label">Total Trips</div></div>
+    <div class="stat-card"><div class="stat-card-value">${upcoming}</div><div class="stat-card-label">Upcoming</div></div>
+    <div class="stat-card"><div class="stat-card-value">${planned}</div><div class="stat-card-label">In Planning</div></div>`;
+  const recent=state.trips.slice(0,6);
+  if(!recent.length){$("recent-trips-grid").innerHTML='<div class="trips-grid-empty">Create a trip to get started ✈️</div>';return;}
+  $("recent-trips-grid").innerHTML=recent.map(t=>`
+    <div class="trip-card" data-id="${t.id}">
+      <div class="trip-card-type">${tripLabel(t.type)}</div>
+      <div class="trip-card-icon">${tripIcon(t.type)}</div>
+      <div class="trip-card-name">${esc(t.name)}</div>
+      <div class="trip-card-meta">${t.destinations?esc(t.destinations)+" · ":""}${t.startDate?formatDate(t.startDate):"No dates set"}</div>
+    </div>`).join("");
+  $("recent-trips-grid").querySelectorAll(".trip-card").forEach(el=>el.onclick=()=>openTrip(el.dataset.id));
+}
+
+function showDashboard(){$("dashboard-view").classList.add("active");$("trip-view").classList.remove("active");$("topbar-title").textContent="WanderPlan";state.activeTrip=null;renderSidebar();}
+
+async function openTrip(id){
+  const trip=await getTrip(id);
+  if(!trip){showToast("Trip not found","error");return;}
+  state.activeTrip=trip;
+  renderSidebar();
+  $("dashboard-view").classList.remove("active");$("trip-view").classList.add("active");$("topbar-title").textContent=trip.name;
+  renderTripHeader(trip);switchTab("overview");renderOverview(trip);
+}
+
+function renderTripHeader(trip){
+  $("trip-type-badge").textContent=tripLabel(trip.type);
+  $("trip-title-display").textContent=trip.name;
+  const dur=daysBetween(trip.startDate,trip.endDate);
+  $("trip-meta").textContent=[trip.destinations,trip.startDate?formatDate(trip.startDate)+(trip.endDate?" – "+formatDate(trip.endDate):""):null,dur?`${dur} day${dur>1?"s":""} `:null].filter(Boolean).join("  ·  ");
+}
+
+function switchTab(tabId){
+  document.querySelectorAll(".trip-tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===tabId));
+  document.querySelectorAll(".tab-content").forEach(c=>c.classList.toggle("active",c.id==="tab-"+tabId));
+  const trip=state.activeTrip;if(!trip)return;
+  if(tabId==="overview")renderOverview(trip);
+  if(tabId==="itinerary")loadAndRenderItinerary(trip);
+  if(tabId==="packing")loadAndRenderPacking(trip);
+  if(tabId==="budget")loadAndRenderBudget(trip);
+  if(tabId==="notes")loadAndRenderNotes(trip);
+}
+
+// ── Overview ──────────────────────────────────────────────────
+function renderOverview(trip){
+  const dur=daysBetween(trip.startDate,trip.endDate);
+  $("ov-destinations").textContent=trip.destinations||"—";
+  $("ov-dates").textContent=trip.startDate?formatDate(trip.startDate)+(trip.endDate?" – "+formatDate(trip.endDate):""):"—";
+  $("ov-duration").textContent=dur?`${dur} day${dur>1?"s":""}`:"—";
+  $("ov-travelers").textContent=trip.travelers||"—";
+  $("ov-budget").textContent=trip.budget?`$${Number(trip.budget).toLocaleString()}`:"—";
+  $("ov-status").textContent=trip.status||"Planning";
+  $("ov-description").textContent=trip.description||"No description added.";
+  $("ai-summary-content").innerHTML="<em>Click Generate to get an AI-powered trip summary and tips.</em>";
+}
+
+async function runAiSummary(){
+  const btn=$("generate-summary-btn");btn.textContent="Loading…";btn.disabled=true;
+  $("ai-summary-content").innerHTML='<div class="ai-loading"><span class="spinner"></span> Generating…</div>';
+  try{const t=await generateTripSummary(state.activeTrip);$("ai-summary-content").innerHTML=t.replace(/\n/g,"<br/>");}
+  catch(e){$("ai-summary-content").innerHTML=`<span style="color:var(--md-error)">Error: ${esc(e.message)}</span>`;}
+  btn.textContent="Regenerate";btn.disabled=false;
+}
+
+// ── Itinerary ─────────────────────────────────────────────────
+async function loadAndRenderItinerary(trip){state.days=await getDays(trip.id);renderItinerary(trip);}
+
+function renderItinerary(trip){
+  const c=$("itinerary-container");
+  if(!state.days.length){c.innerHTML='<div class="itinerary-empty">No days added yet. Click "Add Day" to start.</div>';return;}
+  c.innerHTML=state.days.map((day,i)=>`
+    <div class="day-block">
+      <div class="day-header">
+        <div class="day-header-left">
+          <div class="day-number">${i+1}</div>
+          <div><div class="day-title-text">${esc(day.title||"Day "+(i+1))}</div>${day.date?`<div class="day-date-text">${formatDate(day.date)}</div>`:""}</div>
+        </div>
+        <div class="day-actions">
+          <button class="btn-sm ai-day-btn" data-id="${day.id}" title="AI Suggest">✨</button>
+          <button class="icon-btn edit-day-btn" data-id="${day.id}">✏️</button>
+          <button class="icon-btn delete-day-btn" data-id="${day.id}">🗑</button>
+        </div>
+      </div>
+      <div class="day-body">
+        <div class="day-events">${(day.events||[]).length?(day.events).map((ev,idx)=>`
+          <div class="event-item">
+            <div class="event-time">${esc(ev.time||"—")}</div>
+            <div class="event-content"><div class="event-title">${CAT_ICONS[ev.category]||"📌"} ${esc(ev.title)}</div>${ev.detail?`<div class="event-detail">${esc(ev.detail)}</div>`:""}</div>
+            <span class="event-category ${catClass(ev.category)}">${esc(ev.category||"other")}</span>
+            <button class="icon-btn delete-event-btn" data-dayid="${day.id}" data-idx="${idx}">✕</button>
+          </div>`).join(""):'<div style="font:var(--md-body-sm);color:var(--md-on-surface-variant);padding:.25rem 0">No events yet</div>'}</div>
+        <button class="add-event-btn" data-dayid="${day.id}">+ Add Event</button>
+      </div>
+    </div>`).join("");
+
+  c.querySelectorAll(".delete-day-btn").forEach(btn=>btn.onclick=async e=>{e.stopPropagation();if(!await confirmDialog("Delete this day?"))return;await deleteDay(trip.id,btn.dataset.id);await loadAndRenderItinerary(trip);});
+  c.querySelectorAll(".edit-day-btn").forEach(btn=>btn.onclick=e=>{e.stopPropagation();openEditDayModal(trip,btn.dataset.id);});
+  c.querySelectorAll(".add-event-btn").forEach(btn=>btn.onclick=()=>openAddEventModal(trip,btn.dataset.dayid));
+  c.querySelectorAll(".delete-event-btn").forEach(btn=>btn.onclick=async e=>{
+    e.stopPropagation();const day=state.days.find(d=>d.id===btn.dataset.dayid);if(!day)return;
+    const events=(day.events||[]).filter((_,i)=>i!==Number(btn.dataset.idx));
+    await updateDay(trip.id,btn.dataset.dayid,{events});await loadAndRenderItinerary(trip);
+  });
+  c.querySelectorAll(".ai-day-btn").forEach(btn=>btn.onclick=e=>{e.stopPropagation();runAiDaySuggest(trip,btn.dataset.id);});
+}
+
+function openAddDayModal(){
+  const n=state.days.length+1;
+  let def="";if(state.activeTrip?.startDate){const d=new Date(state.activeTrip.startDate+"T00:00:00");d.setDate(d.getDate()+state.days.length);def=d.toISOString().split("T")[0];}
+  openModal("Add Day",`
+    <div class="form-group"><label class="form-label">Day Title</label><input class="form-input" id="day-title" value="Day ${n}" placeholder="e.g. Arrival Day"/></div>
+    <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="day-date" type="date" value="${def}"/></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="day-notes" placeholder="Overview for the day…"></textarea></div>`,
+  `<button class="btn-ghost" id="day-cancel">Cancel</button><button class="btn-primary" id="day-save">Add Day</button>`);
+  $("day-cancel").onclick=closeModal;
+  $("day-save").onclick=async()=>{
+    await addDay(state.activeTrip.id,{title:$("day-title").value.trim()||`Day ${n}`,date:$("day-date").value,notes:$("day-notes").value.trim(),dayIndex:state.days.length,events:[]});
+    closeModal();await loadAndRenderItinerary(state.activeTrip);showToast("Day added");
+  };
+}
+
+function openEditDayModal(trip,dayId){
+  const day=state.days.find(d=>d.id===dayId);if(!day)return;
+  openModal("Edit Day",`
+    <div class="form-group"><label class="form-label">Day Title</label><input class="form-input" id="eday-title" value="${esc(day.title||"")}"/></div>
+    <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="eday-date" type="date" value="${day.date||""}"/></div>
+    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="eday-notes">${esc(day.notes||"")}</textarea></div>`,
+  `<button class="btn-ghost" id="eday-cancel">Cancel</button><button class="btn-primary" id="eday-save">Save</button>`);
+  $("eday-cancel").onclick=closeModal;
+  $("eday-save").onclick=async()=>{await updateDay(trip.id,dayId,{title:$("eday-title").value.trim(),date:$("eday-date").value,notes:$("eday-notes").value.trim()});closeModal();await loadAndRenderItinerary(trip);showToast("Day updated");};
+}
+
+function openAddEventModal(trip,dayId){
+  openModal("Add Event",`
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Time</label><input class="form-input" id="ev-time" type="time"/></div>
+      <div class="form-group"><label class="form-label">Category</label><select class="form-select" id="ev-cat"><option value="activity">🎯 Activity</option><option value="food">🍽️ Food</option><option value="transport">🚗 Transport</option><option value="lodging">🏨 Lodging</option><option value="other">📌 Other</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Title *</label><input class="form-input" id="ev-title" placeholder="e.g. Visit Eiffel Tower"/></div>
+    <div class="form-group"><label class="form-label">Details</label><textarea class="form-textarea" id="ev-detail" placeholder="Address, booking info, tips…"></textarea></div>`,
+  `<button class="btn-ghost" id="ev-cancel">Cancel</button><button class="btn-primary" id="ev-save">Add Event</button>`);
+  $("ev-cancel").onclick=closeModal;
+  $("ev-save").onclick=async()=>{
+    const title=$("ev-title").value.trim();if(!title){showToast("Title required","error");return;}
+    const day=state.days.find(d=>d.id===dayId);
+    await updateDay(trip.id,dayId,{events:[...(day.events||[]),{time:$("ev-time").value,title,detail:$("ev-detail").value.trim(),category:$("ev-cat").value}]});
+    closeModal();await loadAndRenderItinerary(trip);showToast("Event added");
+  };
+}
+
+async function runAiDaySuggest(trip,dayId){
+  const day=state.days.find(d=>d.id===dayId);if(!day)return;
+  const btn=document.querySelector(`.ai-day-btn[data-id="${dayId}"]`);
+  if(btn){btn.textContent="⏳";btn.disabled=true;}
+  try{const r=await suggestDayItinerary(trip,day);await updateDay(trip.id,dayId,{events:[...(day.events||[]),...(r.events||[])]});await loadAndRenderItinerary(trip);showToast("AI events added!","success");}
+  catch(e){showToast("AI error: "+e.message,"error");}
+  if(btn){btn.textContent="✨";btn.disabled=false;}
+}
+
+// ── Packing ───────────────────────────────────────────────────
+async function loadAndRenderPacking(trip){state.packingItems=await getPackingItems(trip.id);renderPacking();}
+
+function renderPacking(){
+  const c=$("packing-categories");
+  if(!state.packingItems.length){c.innerHTML='<div class="itinerary-empty">No items yet. Add items or use ✨ AI.</div>';$("packing-summary").textContent="";return;}
+  const groups={};
+  state.packingItems.forEach(item=>{const cat=item.category||"General";if(!groups[cat])groups[cat]=[];groups[cat].push(item);});
+  c.innerHTML=Object.entries(groups).map(([cat,items])=>{
+    const chk=items.filter(i=>i.checked).length;
+    return`<div class="packing-category">
+      <div class="packing-cat-header"><div class="packing-cat-name">${esc(cat)}</div><div class="packing-cat-progress">${chk}/${items.length}</div></div>
+      <div class="packing-items">${items.map(item=>`
+        <div class="packing-item">
+          <div class="packing-checkbox ${item.checked?"checked":""}" data-id="${item.id}"></div>
+          <div class="packing-item-name ${item.checked?"done":""}">${esc(item.name)}</div>
+          ${item.qty>1?`<div class="packing-qty">×${item.qty}</div>`:""}
+          <button class="icon-btn" data-del-packing="${item.id}" title="Delete" style="font-size:.75rem">✕</button>
+        </div>`).join("")}</div>
+    </div>`;}).join("");
+  const tot=state.packingItems.length,chk=state.packingItems.filter(i=>i.checked).length;
+  $("packing-summary").textContent=`${chk} of ${tot} items packed`;
+  c.querySelectorAll(".packing-checkbox").forEach(el=>el.onclick=async()=>{const i=state.packingItems.find(x=>x.id===el.dataset.id);if(i)await updatePackingItem(state.activeTrip.id,i.id,{checked:!i.checked});await loadAndRenderPacking(state.activeTrip);});
+  c.querySelectorAll("[data-del-packing]").forEach(el=>el.onclick=async()=>{await deletePackingItem(state.activeTrip.id,el.dataset.delPacking);await loadAndRenderPacking(state.activeTrip);});
+}
+
+function openAddPackingModal(){
+  openModal("Add Packing Item",`
+    <div class="form-group"><label class="form-label">Item Name *</label><input class="form-input" id="pk-name" placeholder="e.g. Sunscreen"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Category</label><input class="form-input" id="pk-cat" placeholder="e.g. Toiletries" list="pk-cats"/><datalist id="pk-cats"><option value="Clothing"/><option value="Toiletries"/><option value="Electronics"/><option value="Documents"/><option value="Health &amp; Safety"/><option value="Accessories"/><option value="Food &amp; Snacks"/><option value="General"/></datalist></div>
+      <div class="form-group"><label class="form-label">Quantity</label><input class="form-input" id="pk-qty" type="number" min="1" value="1"/></div>
+    </div>`,
+  `<button class="btn-ghost" id="pk-cancel">Cancel</button><button class="btn-primary" id="pk-save">Add Item</button>`);
+  $("pk-cancel").onclick=closeModal;
+  $("pk-save").onclick=async()=>{
+    const name=$("pk-name").value.trim();if(!name){showToast("Name required","error");return;}
+    await addPackingItem(state.activeTrip.id,{name,category:$("pk-cat").value.trim()||"General",qty:Number($("pk-qty").value)||1,checked:false});
+    closeModal();await loadAndRenderPacking(state.activeTrip);showToast("Item added");
+  };
+}
+
+async function runAiPacking(){
+  const btn=$("ai-packing-btn");btn.textContent="⏳ Loading…";btn.disabled=true;
+  try{
+    const r=await generatePackingList(state.activeTrip);let n=0;
+    for(const cat of(r.categories||[]))for(const item of(cat.items||[])){await addPackingItem(state.activeTrip.id,{name:item.name,category:cat.name,qty:item.qty||1,checked:false});n++;}
+    await loadAndRenderPacking(state.activeTrip);showToast(`${n} items added from AI!`,"success");
+  }catch(e){showToast("AI error: "+e.message,"error");}
+  btn.textContent="✨ AI Suggest";btn.disabled=false;
+}
+
+// ── Budget ────────────────────────────────────────────────────
+async function loadAndRenderBudget(trip){state.expenses=await getExpenses(trip.id);renderBudget(trip);}
+
+function renderBudget(trip){
+  const B=Number(trip.budget)||0,S=state.expenses.reduce((s,e)=>s+Number(e.amount),0),R=B-S,P=B?Math.min(100,(S/B)*100):0,over=S>B&&B>0;
+  $("budget-overview").innerHTML=`
+    <div class="budget-totals">
+      <div class="budget-total-item"><div class="budget-total-label">Budget</div><div class="budget-total-value">$${B?B.toLocaleString():"—"}</div></div>
+      <div class="budget-total-item"><div class="budget-total-label">Spent</div><div class="budget-total-value">$${S.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}</div></div>
+      ${B?`<div class="budget-total-item"><div class="budget-total-label">${over?"Over":"Remaining"}</div><div class="budget-total-value ${over?"over":"ok"}">$${Math.abs(R).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}</div></div>`:""}
+    </div>
+    ${B?`<div class="budget-bar-item" style="margin-top:1rem"><div class="budget-bar-label"><span>Total Progress</span><span>${Math.round(P)}%</span></div><div class="budget-bar-track"><div class="budget-bar-fill ${over?"over":""}" style="width:${P}%"></div></div></div>`:""}`;
+  const el=$("expenses-list");
+  if(!state.expenses.length){el.innerHTML='<div class="itinerary-empty">No expenses tracked yet.</div>';return;}
+  el.innerHTML=state.expenses.map(exp=>`
+    <div class="expense-item">
+      <div class="expense-left"><div class="expense-icon">${EXP_ICONS[exp.category]||"💸"}</div><div><div class="expense-name">${esc(exp.name)}</div><div class="expense-cat">${esc(exp.category||"other")}${exp.date?" · "+formatDate(exp.date):""}</div></div></div>
+      <div style="display:flex;align-items:center;gap:.5rem"><div class="expense-amount">$${Number(exp.amount).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2})}</div><button class="icon-btn" data-del-exp="${exp.id}" style="font-size:.75rem">✕</button></div>
+    </div>`).join("");
+  el.querySelectorAll("[data-del-exp]").forEach(btn=>btn.onclick=async()=>{await deleteExpense(state.activeTrip.id,btn.dataset.delExp);await loadAndRenderBudget(state.activeTrip);});
+}
+
+function openAddExpenseModal(){
+  openModal("Add Expense",`
+    <div class="form-group"><label class="form-label">Description *</label><input class="form-input" id="exp-name" placeholder="e.g. Hotel Night 1"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Amount ($) *</label><input class="form-input" id="exp-amount" type="number" min="0" step="0.01" placeholder="0.00"/></div>
+      <div class="form-group"><label class="form-label">Category</label><select class="form-select" id="exp-cat"><option value="transport">✈️ Transport</option><option value="lodging">🏨 Lodging</option><option value="food">🍔 Food</option><option value="activity">🎡 Activity</option><option value="shopping">🛍️ Shopping</option><option value="other">💸 Other</option></select></div>
+    </div>
+    <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="exp-date" type="date"/></div>`,
+  `<button class="btn-ghost" id="exp-cancel">Cancel</button><button class="btn-primary" id="exp-save">Add Expense</button>`);
+  $("exp-cancel").onclick=closeModal;
+  $("exp-save").onclick=async()=>{
+    const name=$("exp-name").value.trim(),amount=parseFloat($("exp-amount").value);
+    if(!name||isNaN(amount)){showToast("Name and amount required","error");return;}
+    await addExpense(state.activeTrip.id,{name,amount,category:$("exp-cat").value,date:$("exp-date").value});
+    closeModal();await loadAndRenderBudget(state.activeTrip);showToast("Expense added");
+  };
+}
+
+// ── Notes ──────────────────────────────────────────────────────
+async function loadAndRenderNotes(trip){state.notes=await getNotes(trip.id);renderNotes();}
+
+function renderNotes(){
+  const c=$("notes-container");
+  if(!state.notes.length){c.innerHTML='<div class="itinerary-empty">No notes yet. Capture ideas, links, or anything useful.</div>';c.style.display="block";return;}
+  c.style.display="grid";
+  c.innerHTML=state.notes.map(n=>`
+    <div class="note-card" data-id="${n.id}">
+      <div class="note-title">${esc(n.title||"Untitled")}</div>
+      <div class="note-content">${esc(n.content||"")}</div>
+      <div class="note-date">${n.createdAt?.toDate?n.createdAt.toDate().toLocaleDateString():""}</div>
+      <div class="note-actions"><button class="btn-sm note-edit-btn" data-id="${n.id}">Edit</button><button class="btn-sm note-del-btn" data-id="${n.id}" style="color:var(--md-error);border-color:var(--md-error)">Delete</button></div>
+    </div>`).join("");
+  c.querySelectorAll(".note-edit-btn").forEach(btn=>btn.onclick=e=>{e.stopPropagation();openEditNoteModal(btn.dataset.id);});
+  c.querySelectorAll(".note-del-btn").forEach(btn=>btn.onclick=async e=>{e.stopPropagation();await deleteNote(state.activeTrip.id,btn.dataset.id);await loadAndRenderNotes(state.activeTrip);});
+}
+
+function openAddNoteModal(){
+  openModal("Add Note",`
+    <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="note-title" placeholder="e.g. Restaurant ideas"/></div>
+    <div class="form-group"><label class="form-label">Content *</label><textarea class="form-textarea" id="note-content" style="min-height:120px" placeholder="Write anything…"></textarea></div>`,
+  `<button class="btn-ghost" id="note-cancel">Cancel</button><button class="btn-primary" id="note-save">Save Note</button>`);
+  $("note-cancel").onclick=closeModal;
+  $("note-save").onclick=async()=>{
+    const content=$("note-content").value.trim();if(!content){showToast("Content required","error");return;}
+    await addNote(state.activeTrip.id,{title:$("note-title").value.trim(),content});
+    closeModal();await loadAndRenderNotes(state.activeTrip);showToast("Note saved");
+  };
+}
+
+function openEditNoteModal(noteId){
+  const n=state.notes.find(x=>x.id===noteId);if(!n)return;
+  openModal("Edit Note",`
+    <div class="form-group"><label class="form-label">Title</label><input class="form-input" id="enote-title" value="${esc(n.title||"")}"/></div>
+    <div class="form-group"><label class="form-label">Content</label><textarea class="form-textarea" id="enote-content" style="min-height:120px">${esc(n.content||"")}</textarea></div>`,
+  `<button class="btn-ghost" id="enote-cancel">Cancel</button><button class="btn-primary" id="enote-save">Save</button>`);
+  $("enote-cancel").onclick=closeModal;
+  $("enote-save").onclick=async()=>{await updateNote(state.activeTrip.id,noteId,{title:$("enote-title").value.trim(),content:$("enote-content").value.trim()});closeModal();await loadAndRenderNotes(state.activeTrip);showToast("Note updated");};
+}
+
+// ── Trip Create/Edit ──────────────────────────────────────────
+function tripFormHTML(trip={}){
+  const types=TRIP_TYPES.map(t=>`<div class="type-option ${trip.type===t.id?"selected":""}" data-type="${t.id}"><span class="type-option-icon">${t.icon}</span>${t.label}</div>`).join("");
+  return`
+    <div class="form-group"><label class="form-label">Trip Name *</label><input class="form-input" id="t-name" placeholder="e.g. Summer Road Trip" value="${esc(trip.name||"")}"/></div>
+    <div class="form-group"><label class="form-label">Trip Type</label><div class="type-selector">${types}</div><input type="hidden" id="t-type" value="${trip.type||"vacation"}"/></div>
+    <div class="form-group"><label class="form-label">Destination(s)</label><input class="form-input" id="t-dest" placeholder="e.g. Paris, Rome" value="${esc(trip.destinations||"")}"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Start Date</label><input class="form-input" id="t-start" type="date" value="${trip.startDate||""}"/></div>
+      <div class="form-group"><label class="form-label">End Date</label><input class="form-input" id="t-end" type="date" value="${trip.endDate||""}"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Travelers</label><input class="form-input" id="t-travelers" type="number" min="1" value="${trip.travelers||1}"/></div>
+      <div class="form-group"><label class="form-label">Budget ($)</label><input class="form-input" id="t-budget" type="number" min="0" placeholder="0" value="${trip.budget||""}"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Status</label><select class="form-select" id="t-status"><option value="planning" ${trip.status==="planning"?"selected":""}>Planning</option><option value="booked" ${trip.status==="booked"?"selected":""}>Booked</option><option value="active" ${trip.status==="active"?"selected":""}>Active</option><option value="complete" ${trip.status==="complete"?"selected":""}>Complete</option></select></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="t-desc" placeholder="What's this trip about?">${esc(trip.description||"")}</textarea></div>`;
+}
+
+function bindTypeSelector(){
+  document.querySelectorAll(".type-option").forEach(el=>el.onclick=()=>{
+    document.querySelectorAll(".type-option").forEach(e=>e.classList.remove("selected"));
+    el.classList.add("selected");$("t-type").value=el.dataset.type;
+  });
+}
+
+function collectTripForm(){
+  return{name:$("t-name").value.trim(),type:$("t-type").value,destinations:$("t-dest").value.trim(),startDate:$("t-start").value,endDate:$("t-end").value,travelers:Number($("t-travelers").value)||1,budget:$("t-budget").value?Number($("t-budget").value):null,status:$("t-status").value,description:$("t-desc").value.trim()};
+}
+
+function openNewTripModal(){
+  openModal("Create New Trip",tripFormHTML(),`<button class="btn-ghost" id="t-cancel">Cancel</button><button class="btn-primary" id="t-save">Create Trip ✈️</button>`);
+  bindTypeSelector();
+  $("t-cancel").onclick=closeModal;
+  $("t-save").onclick=async()=>{
+    const d=collectTripForm();if(!d.name){showToast("Trip name required","error");return;}
+    const id=await createTrip(d);closeModal();await loadTrips();openTrip(id);showToast("Trip created! 🎉","success");
+  };
+}
+
+function openEditTripModal(trip){
+  openModal("Edit Trip",tripFormHTML(trip),`<button class="btn-ghost" id="t-cancel">Cancel</button><button class="btn-primary" id="t-save">Save Changes</button>`);
+  bindTypeSelector();
+  $("t-cancel").onclick=closeModal;
+  $("t-save").onclick=async()=>{
+    const d=collectTripForm();if(!d.name){showToast("Trip name required","error");return;}
+    await updateTrip(trip.id,d);closeModal();
+    const u=await getTrip(trip.id);state.activeTrip=u;
+    await loadTrips();renderTripHeader(u);renderOverview(u);showToast("Trip updated","success");
+  };
+}
+
+// ── Settings ──────────────────────────────────────────────────
+function openSettings(){$("settings-panel").classList.add("open");getMeta().then(m=>{if(m?.apiKey)$("api-key-input").value=m.apiKey;});}
+function closeSettings(){$("settings-panel").classList.remove("open");}
+
+async function saveApiKey(){
+  const key=$("api-key-input").value.trim();if(!key){showToast("Enter an API key","error");return;}
+  await setMeta({apiKey:key});showToast("API key saved securely","success");closeSettings();
+}
+
+function openChangePinModal(){
+  closeSettings();
+  openModal("Change PIN",`
+    <p style="color:var(--md-on-surface-variant);margin-bottom:1.25rem;font:var(--md-body-md)">Enter and confirm your new PIN.</p>
+    <div class="form-group"><label class="form-label">New PIN (4-6 digits)</label><input class="form-input" id="new-pin" type="password" inputmode="numeric" maxlength="6" placeholder="••••"/></div>
+    <div class="form-group"><label class="form-label">Confirm PIN</label><input class="form-input" id="conf-pin" type="password" inputmode="numeric" maxlength="6" placeholder="••••"/></div>`,
+  `<button class="btn-ghost" id="chpin-cancel">Cancel</button><button class="btn-primary" id="chpin-save">Change PIN</button>`);
+  $("chpin-cancel").onclick=closeModal;
+  $("chpin-save").onclick=async()=>{
+    const np=$("new-pin").value,cp=$("conf-pin").value;
+    if(np.length<4){showToast("PIN must be at least 4 digits","error");return;}
+    if(np!==cp){showToast("PINs don't match","error");return;}
+    await changePin(np);closeModal();showToast("PIN changed successfully","success");
+  };
+}
+
+// ── KICK OFF ──────────────────────────────────────────────────
+init();
+</script>
 </body>
 </html>
