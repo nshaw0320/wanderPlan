@@ -1160,7 +1160,7 @@ body{
       <div id="auth-error" class="auth-error"></div>
     </div>
 
-    <div id="auth-login">
+    <div id="auth-login" style="display:none">
       <h2>Welcome back</h2>
       <p class="auth-sub">Enter your PIN to access your trips</p>
       <div class="pin-display" id="login-pin-display">
@@ -1539,10 +1539,19 @@ async function init() {
   $("modal-close").onclick=closeModal;
   $("modal-overlay").addEventListener("click",e=>{if(e.target===$("modal-overlay"))closeModal();});
 
+  // Show spinner while Firebase resolves
+  const _ld=document.createElement("div");
+  _ld.style.cssText="display:flex;align-items:center;justify-content:center;gap:.75rem;padding:1.25rem 0;color:var(--md-on-surface-variant);font-size:.875rem";
+  _ld.innerHTML='<span class="spinner"></span> Connecting&hellip;';
+  document.querySelector(".auth-card").appendChild(_ld);
+
   try {
-    if(await isFirstRun()) showAuthSetup();
+    const firstRun=await isFirstRun();
+    _ld.remove();
+    if(firstRun) showAuthSetup();
     else showAuthLogin();
   } catch(e) {
+    _ld.remove();
     console.error(e);
     document.body.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:1rem;font-family:sans-serif;color:#191c1e;padding:2rem;text-align:center;"><div style="font-size:3rem">⚠️</div><div style="color:#ba1a1a;max-width:440px;font-size:1rem">${e.message}</div><div style="color:#41484d;font-size:.875rem">Edit the firebaseConfig object in the &lt;script&gt; tag inside index.html.</div></div>`;
   }
